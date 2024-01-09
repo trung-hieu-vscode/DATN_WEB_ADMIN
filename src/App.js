@@ -1,8 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router, Route, Navigate, Outlet, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Navigate, Outlet, Routes, BrowserRouter } from 'react-router-dom';
 import React, { useState } from 'react';
 import TestLoadapi from './resoureces/components/test/TestLoadapi';
-import Login from './resoureces/components/users/Login';
+import Login from './resoureces/Users/Login';
+import Sidebar from './resoureces/components/Sidebar';
+import Dashboard from './resoureces/components/pages/Dashboard';
+import Analytics from './resoureces/components/pages/Analytics';
+import Comment from './resoureces/components/pages/Comment';
+import Product from './resoureces/components/pages/Product';
+import ProductList from './resoureces/components/pages/ProductList';
+import About from './resoureces/components/pages/About';
 
 
 function App() {
@@ -39,6 +46,21 @@ function App() {
     }
     return <Outlet />
   }
+  return (
+    <BrowserRouter>
+      <Sidebar>
+        <Routes>
+          <Route path='/' element={<Dashboard />} />
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/analytics' element={<Analytics />} />
+          <Route path='/comment' element={<Comment />} />
+          <Route path='/product' element={<Product />} />
+          <Route path='/productList' element={<ProductList />} />
+          <Route path='/about' element={<About />} />
+        </Routes>
+      </Sidebar>
+    </BrowserRouter>
+  );
   return (
     <div className="container">
       <Router>

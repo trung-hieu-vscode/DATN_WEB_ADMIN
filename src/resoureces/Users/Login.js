@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AxiosInstance from '../helper/AxiosInstance';
+import AxiosInstance from '../helper/Axiosintances';
 import './user.css';
 import { FaUser, FaLock } from "react-icons/fa";
 
