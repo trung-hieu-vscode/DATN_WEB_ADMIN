@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTh, FaUserAlt, FaRegChartBar, FaShoppingBag, FaThList, FaCommentAlt, FaBars} from "react-icons/fa";
+import { FaTh, FaUserAlt, FaRegChartBar, FaShoppingBag, FaThList, FaCommentAlt, FaBars, FaUsers} from "react-icons/fa";
 import './Sidebar.css'
 import { NavLink } from 'react-router-dom';
 
@@ -13,10 +13,15 @@ const Sidebar = ({children}) => {
             icon: <FaTh />
         },
         {
-            path: "/analytics",
-            name: "Analytics",
-            icon: <FaRegChartBar />
+            path: "/user",
+            name: "List Users",
+            icon: <FaUsers />
         },
+        // {
+        //     path: "/analytics",
+        //     name: "Analytics",
+        //     icon: <FaRegChartBar />
+        // },
         {
             path: "/comment",
             name: "Comment",

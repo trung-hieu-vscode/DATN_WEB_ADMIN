@@ -1,47 +1,85 @@
-*{
+* {
     margin: 0;
     padding: 0;
     text-decoration: none;
+    box-sizing: border-box; /* Ensures padding doesn't affect overall width */
 }
 
-.a{
+.a {
     display: flex;
 }
-.sidebar{
+
+.sidebar {
     background: #f9862e;
     color: #fff;
-    height: 100vh;
-    width: 200px;
+    width: 20%; /* Responsive width */
+    max-width: 200px; /* Maximum width */
 }
-.top_section{
+
+.top_section {
     display: flex;
     align-items: center;
     padding: 20px 15px;
 }
-.logo{
-    font-size: 25px;
+
+.logo {
+    font-size: 1.6rem; /* Using rem for scalability */
 }
-.bars{
+
+.bars {
     display: flex;
-    font-size: 25px;
-    margin-left: 50px;
+    font-size: 1.6rem;
+    margin-left: auto; /* Pushes bars to the end */
 }
-.link{
+
+.link {
     display: flex;
     color: #fff;
     padding: 10px 15px;
     gap: 15px;
     transition: all 0.5s;
 }
-.link:hover{
-    background: lightskyblue;
-    color: #000;
-    transition: all 0.5s;
-}
-.active{
+
+.link:hover {
     background: lightskyblue;
     color: #000;
 }
-.icon, .link_text{
-    font-size: 20px;
+
+.active {
+    background: lightskyblue;
+    color: #000;
+}
+
+.icon, .link_text {
+    font-size: 1.2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 25%; /* Slightly wider sidebar on smaller screens */
+    }
+
+    .logo, .icon, .link_text {
+        font-size: 1rem; /* Smaller font size for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .a {
+        flex-direction: column; /* Stack sidebar and main content on very small screens */
+    }
+
+    .sidebar {
+        width: 100%; /* Full width sidebar on very small screens */
+        max-width: none;
+    }
+
+    .top_section, .link {
+        justify-content: center; /* Center elements in the sidebar */
+    }
+
+    .bars {
+        margin-left: 0; /* Reset margin for bars */
+    }
 }

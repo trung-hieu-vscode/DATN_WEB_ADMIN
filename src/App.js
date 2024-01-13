@@ -10,6 +10,7 @@ import Comment from './resoureces/components/pages/Comment';
 import Product from './resoureces/components/pages/Product';
 import ProductList from './resoureces/components/pages/ProductList';
 import About from './resoureces/components/pages/About';
+import User from './resoureces/components/pages/User';
 
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             {/* sau khi đăng nhập thành công thì chuyển qua đây */}
             <Route path='/' element={<WithSidebar><Dashboard /></WithSidebar>} />
+            <Route path='/user' element={<WithSidebar><User /></WithSidebar>} />
             <Route path='/dashboard' element={<WithSidebar><Dashboard /></WithSidebar>} />
             <Route path='/analytics' element={<WithSidebar><Analytics /></WithSidebar>} />
             <Route path='/comment' element={<WithSidebar><Comment /></WithSidebar>} />
