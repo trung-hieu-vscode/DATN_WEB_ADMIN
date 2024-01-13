@@ -46,21 +46,12 @@ function App() {
     }
     return <Outlet />
   }
-  return (
-    <BrowserRouter>
-      <Sidebar>
-        <Routes>
-          <Route path='/' element={<Dashboard />} />
-          <Route path='/dashboard' element={<Dashboard />} />
-          <Route path='/analytics' element={<Analytics />} />
-          <Route path='/comment' element={<Comment />} />
-          <Route path='/product' element={<Product />} />
-          <Route path='/productList' element={<ProductList />} />
-          <Route path='/about' element={<About />} />
-        </Routes>
-      </Sidebar>
-    </BrowserRouter>
-  );
+  function WithSidebar({ children }) {
+    return (
+      <Sidebar>{children}</Sidebar>
+    );
+  }
+
   return (
     <div className="container">
       <Router>
@@ -71,7 +62,13 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute />}>
             {/* sau khi đăng nhập thành công thì chuyển qua đây */}
-            <Route path="/" element={<TestLoadapi />} />
+            <Route path='/' element={<WithSidebar><Dashboard /></WithSidebar>} />
+            <Route path='/dashboard' element={<WithSidebar><Dashboard /></WithSidebar>} />
+            <Route path='/analytics' element={<WithSidebar><Analytics /></WithSidebar>} />
+            <Route path='/comment' element={<WithSidebar><Comment /></WithSidebar>} />
+            <Route path='/product' element={<WithSidebar><Product /></WithSidebar>} />
+            <Route path='/productList' element={<WithSidebar><ProductList /></WithSidebar>} />
+            <Route path='/about' element={<WithSidebar><About /></WithSidebar>} />
           </Route>
         </Routes>
       </Router>

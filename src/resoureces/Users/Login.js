@@ -12,24 +12,22 @@ const Login = (props) => {
     try {
       const body = { email, password };
       const result = await AxiosInstance().post('api/login-user', body);
-
-      if (result.status === 200 && result.data) {
-        saveUser(result.data.user);
-
-        localStorage.setItem('user', JSON.stringify(result.data.user));
-
+  
+      if (result && result.success) {
+        console.log('Đăng nhập thành công');
+        saveUser(result.user);
+        localStorage.setItem('user', JSON.stringify(result.user));
         alert('Đăng nhập thành công!');
       } else {
-        alert(result.data.message || 'Đăng nhập thất bại');
+        console.log('Đăng nhập thất bại');
       }
     } catch (error) {
-      console.error('Đăng nhập thất bại:', error);
-      alert('Lỗi đăng nhập: ' + error.message);
+      console.error(error);
     }
   };
 
   return (
-    <div className='container'>
+    <div className="body">
       <div className="wrapper">
         <form action="">
           <h1 style={{ color: "#fff" }}>Login</h1>
