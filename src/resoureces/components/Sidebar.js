@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaTh, FaUserAlt, FaRegChartBar, FaShoppingBag, FaThList, FaCommentAlt, FaBars, FaUsers} from "react-icons/fa";
-import './Sidebar.css'
+import './css/Sidebar.css'
 import { NavLink } from 'react-router-dom';
 
 const Sidebar = ({children}) => {

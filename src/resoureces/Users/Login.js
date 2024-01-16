@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AxiosInstance from '../helper/Axiosintances';
-import './user.css';
+import user from '../components/css/user.css'
 import { FaUser, FaLock } from "react-icons/fa";
 
 const Login = (props) => {
