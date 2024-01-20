@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AxiosInstance from '../../helper/Axiosintances';
+import axios from 'axios';
 import AddUserDailog from '../AddUserDailog';
 import EditUserDialog from '../EditUserDailog';
 import swal from 'sweetalert';
@@ -14,7 +15,7 @@ const User = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await AxiosInstance().get('api/user');
+                const response = await AxiosInstance().get('api/users');
                 if (response && Array.isArray(response.users)) {
                     setUsers(response.users);
                 } else {
@@ -41,8 +42,8 @@ const User = () => {
         }).then(async (willDelete) => {
             if (willDelete) {
                 try {
-                    const result = await AxiosInstance().delete(`/api/delete-user?${_id}`);
-
+                    const result = await AxiosInstance().delete(`api/delete-user?id=${_id}`);
+                    // const result = await axios.delete(`http://localhost:3000/api/delete-user?id=${_id}`);
                     if (result.status === 200) {
                         swal('Xóa thành công', { icon: 'success' });
                         setUsers(users.filter(user => user._id !== _id));
@@ -51,7 +52,7 @@ const User = () => {
                     }
                 } catch (error) {
                     console.error('Error deleting user:', error);
-                    swal('Có lỗi xảy ra khi xóa người dùng. Kiểm tra console để biết chi tiết.', { icon: 'error' });
+                    swal('Có lỗi xảy ra khi xóa người dùng.', { icon: 'error' });
                 }
             }
         });
@@ -70,21 +71,21 @@ const User = () => {
         setShowEditUserDialog(true);
     };
 
-        // Style cho bảng
-        const tableStyle = {
-            width: '100%',
-            borderCollapse: 'collapse',
-        };
-    
-        // Style cho header và cell
-        const cellStyle = {
-            border: '1px solid #ddd',
-            padding: '8px',
-            textAlign: 'left',
-        };
+    // Style cho bảng
+    const tableStyle = {
+        width: '100%',
+        borderCollapse: 'collapse',
+    };
+
+    // Style cho header và cell
+    const cellStyle = {
+        border: '1px solid #ddd',
+        padding: '8px',
+        textAlign: 'left',
+    };
 
     return (
-        <div className="container">
+        <div className="container-fluid">
             <h1>User List</h1>
             <button onClick={handleOpenAddUserDialog}>Create</button>
             {showAddUserDialog && (
@@ -116,7 +117,6 @@ const User = () => {
                             <td style={cellStyle}>{user.phone}</td>
                             <td style={cellStyle}>{user.uytin}%</td>
                             <td style={cellStyle}>{user.vip}False</td>
-                            <tr />
                             <td style={cellStyle}>
                                 <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
                             </td>
@@ -130,24 +130,27 @@ const User = () => {
                                         setShowEditUserDialog(false);
                                         setEditingUser(null);
                                     }}
-                                    onSave={async (updatedUser) => {
-                                        try {
-                                            // Gọi API để cập nhật thông tin người dùng
-                                            const response = await AxiosInstance().post(`/api/update-user/${updatedUser._id}`, updatedUser);
-                                            if (response.status === 200) {
-                                                // Cập nhật danh sách người dùng
-                                                setUsers(users.map(user => user._id === updatedUser._id ? { ...user, ...updatedUser } : user));
-                                                // Đóng dialog chỉnh sửa
-                                                setShowEditUserDialog(false);
-                                                swal("Người dùng đã được cập nhật thành công!", { icon: "success" });
-                                            } else {
-                                                throw new Error('Cập nhật không thành công');
+                                    onSave={
+                                        async (updatedUser) => {
+                                            try {
+                                                // Gọi API để cập nhật thông tin người dùng
+                                                const response = await AxiosInstance().post(`api/update-user?id=${updatedUser._id}`, updatedUser);
+                                                console.log(response);
+                                                if (response.status == 200) {
+                                                    // Cập nhật danh sách người dùng
+                                                    setUsers(users.map(user => user._id === updatedUser._id ? { ...user, ...updatedUser } : user));
+                                                    // Đóng dialog chỉnh sửa
+                                                    setShowEditUserDialog(false);
+                                                    swal("Người dùng đã được cập nhật thành công!", { icon: "success" });
+                                                } else {
+                                                    throw new Error('Cập nhật không thành công');
+                                                }
+                                            } catch (error) {
+                                                console.error('Lỗi khi cập nhật người dùng:', error);
+                                                swal("Lỗi khi cập nhật thông tin người dùng.", { icon: "error" });
                                             }
-                                        } catch (error) {
-                                            console.error('Lỗi khi cập nhật người dùng:', error);
-                                            swal("Lỗi khi cập nhật thông tin người dùng.", { icon: "error" });
                                         }
-                                    }}
+                                    }
                                 />
                             )}
                         </tr>

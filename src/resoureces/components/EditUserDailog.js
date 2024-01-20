@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import swal from 'sweetalert';
 import { Dialog, DialogContent, DialogTitle, TextField, Button, FormControlLabel, Checkbox } from '@mui/material';
 import AxiosInstance from '../helper/Axiosintances';
 var bcrypt = require('bcryptjs');
@@ -15,11 +14,11 @@ const EditUserDialog = ({ user, onSave, onClose }) => {
     });
 
     useEffect(() => {
-        // Khi component được mounted, thiết lập thông tin người dùng hiện tại vào state
+        // Khi component được mounted, thiết lập thông tin người dùng hiện tại
         if (user) {
             setEditedUser({
                 ...user,
-                password: '', // Không hiển thị mật khẩu
+                password: '', 
             });
         }
     }, [user]);
@@ -33,7 +32,6 @@ const EditUserDialog = ({ user, onSave, onClose }) => {
     };
 
     const handleSaveUser = async () => {
-        // Tiền xử lý trước khi gửi thông tin người dùng mới
         // Bỏ qua mật khẩu nếu không có gì được nhập vào (để không cập nhật mật khẩu hiện tại)
         const updatedUser = {
             ...editedUser,

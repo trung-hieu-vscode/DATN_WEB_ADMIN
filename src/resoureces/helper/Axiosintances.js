@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const AxiosInstance = (contentType = 'application/json') => {
     const axiosInstance = axios.create({
-        baseURL: 'https://datnapi.vercel.app'
+        baseURL: 'https://datnapi.vercel.app/'
     });
 
     axiosInstance.interceptors.request.use(
