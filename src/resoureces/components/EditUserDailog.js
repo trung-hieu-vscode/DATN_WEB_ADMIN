@@ -9,8 +9,8 @@ const EditUserDialog = ({ user, onSave, onClose }) => {
         email: '',
         password: '',
         phone: '',
-        uytin: '',
-        vip: false
+        level: '',
+        balance: ''
     });
 
     useEffect(() => {
@@ -50,7 +50,8 @@ const EditUserDialog = ({ user, onSave, onClose }) => {
                 <TextField margin="dense" label="Email" name="email" value={editedUser.email} onChange={handleChange} fullWidth />
                 <TextField margin="dense" label="Mật khẩu (Để trống nếu không đổi)" name="password" type="password" value={editedUser.password} onChange={handleChange} fullWidth />
                 <TextField margin="dense" label="Điện thoại" name="phone" value={editedUser.phone} onChange={handleChange} fullWidth />
-                <TextField margin="dense" label="Uy tín" name="uytin" value={editedUser.uytin} onChange={handleChange} fullWidth />
+                <TextField margin="dense" label="Level" name="level" value={editedUser.level} onChange={handleChange} fullWidth />
+                <TextField margin="dense" label="Balance" name="balance" value={editedUser.balance} onChange={handleChange} fullWidth />
                 <FormControlLabel
                     control={
                         <Checkbox

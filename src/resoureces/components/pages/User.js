@@ -43,13 +43,7 @@ const User = () => {
             if (willDelete) {
                 try {
                     const result = await AxiosInstance().delete(`api/delete-user?id=${_id}`);
-                    // const result = await axios.delete(`http://localhost:3000/api/delete-user?id=${_id}`);
-                    if (result.status === 200) {
-                        swal('Xóa thành công', { icon: 'success' });
-                        setUsers(users.filter(user => user._id !== _id));
-                    } else {
-                        swal('Xóa thất bại', { icon: 'error' });
-                    }
+                    window.location.href = '/user'; 
                 } catch (error) {
                     console.error('Error deleting user:', error);
                     swal('Có lỗi xảy ra khi xóa người dùng.', { icon: 'error' });
@@ -104,7 +98,8 @@ const User = () => {
                         <th style={cellStyle}>Name</th>
                         <th style={cellStyle}>Email</th>
                         <th style={cellStyle}>Phone</th>
-                        <th style={cellStyle}>Reputation</th>
+                        <th style={cellStyle}>Level</th>
+                        <th style={cellStyle}>Balance</th>
                         <th style={cellStyle}>VIP</th>
                     </tr>
                 </thead>
@@ -115,7 +110,8 @@ const User = () => {
                             <td style={cellStyle}>{user.name}</td>
                             <td style={cellStyle}>{user.email}</td>
                             <td style={cellStyle}>{user.phone}</td>
-                            <td style={cellStyle}>{user.uytin}%</td>
+                            <td style={cellStyle}>{user.level}</td>
+                            <td style={cellStyle}>{user.balance}</td>
                             <td style={cellStyle}>{user.vip}False</td>
                             <td style={cellStyle}>
                                 <button onClick={() => handleDeleteUser(user._id)}>Delete</button>

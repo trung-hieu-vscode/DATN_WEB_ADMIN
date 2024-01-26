@@ -11,6 +11,7 @@ import Product from './resoureces/components/pages/Product';
 import ProductList from './resoureces/components/pages/ProductList';
 import About from './resoureces/components/pages/About';
 import User from './resoureces/components/pages/User';
+import Register from './resoureces/Users/Register';
 
 
 function App() {
@@ -58,12 +59,14 @@ function App() {
       <Router>
         <Routes>
           <Route element={<PublicRoute />}>
+          <Route path="/register" element={<Register/>} />
             {/* màn hình đăng nhập, quên mật khẩu... ở đây */}
             <Route path="/login" element={<Login saveUser={saveUserToLocalStorage} />} />
           </Route>
           <Route element={<ProtectedRoute />}>
             {/* sau khi đăng nhập thành công thì chuyển qua đây */}
             <Route path='/' element={<WithSidebar><Dashboard /></WithSidebar>} />
+            <Route path="/register" element={<Register/>} />
             <Route path='/user' element={<WithSidebar><User /></WithSidebar>} />
             <Route path='/dashboard' element={<WithSidebar><Dashboard /></WithSidebar>} />
             <Route path='/analytics' element={<WithSidebar><Analytics /></WithSidebar>} />
