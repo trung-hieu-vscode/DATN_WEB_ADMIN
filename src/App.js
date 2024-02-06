@@ -6,12 +6,12 @@ import Login from './resoureces/Users/Login';
 import Sidebar from './resoureces/components/Sidebar';
 import Dashboard from './resoureces/components/pages/Dashboard';
 import Analytics from './resoureces/components/pages/Analytics';
-import Comment from './resoureces/components/pages/Comment';
 import Product from './resoureces/components/pages/Product';
 import ProductList from './resoureces/components/pages/ProductList';
 import About from './resoureces/components/pages/About';
 import User from './resoureces/components/pages/User';
 import Register from './resoureces/Users/Register';
+import Chart from './resoureces/components/pages/Chart';
 
 
 function App() {
@@ -70,7 +70,7 @@ function App() {
             <Route path='/user' element={<WithSidebar><User /></WithSidebar>} />
             <Route path='/dashboard' element={<WithSidebar><Dashboard /></WithSidebar>} />
             <Route path='/analytics' element={<WithSidebar><Analytics /></WithSidebar>} />
-            <Route path='/comment' element={<WithSidebar><Comment /></WithSidebar>} />
+            <Route path='/chart' element={<WithSidebar><Chart/></WithSidebar>} />
             <Route path='/product' element={<WithSidebar><Product /></WithSidebar>} />
             <Route path='/productList' element={<WithSidebar><ProductList /></WithSidebar>} />
             <Route path='/about' element={<WithSidebar><About /></WithSidebar>} />
