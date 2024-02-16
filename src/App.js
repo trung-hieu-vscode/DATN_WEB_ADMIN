@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Navigate, Outlet, Routes } from 'react-
 import React, { useState } from 'react';
 import TestLoadapi from './resoureces/components/test/TestLoadapi';
 import Login from './resoureces/components/users/Login';
+import PostPage from './resoureces/components/post';
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
             {/* sau khi đăng nhập thành công thì chuyển qua đây */}
             <Route path="/" element={<TestLoadapi />} />
           </Route>
+          <Route path="/post" element={<PostPage />} />
         </Routes>
       </Router>
     </div>
