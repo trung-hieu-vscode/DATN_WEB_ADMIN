@@ -12,7 +12,8 @@ import About from './resoureces/components/pages/About';
 import User from './resoureces/components/pages/User';
 import Register from './resoureces/Users/Register';
 import Chart from './resoureces/components/pages/Chart';
-
+import Login from './resoureces/components/users/Login';
+import PostPage from './resoureces/components/post';
 
 function App() {
 
@@ -75,6 +76,7 @@ function App() {
             <Route path='/productList' element={<WithSidebar><ProductList /></WithSidebar>} />
             <Route path='/about' element={<WithSidebar><About /></WithSidebar>} />
           </Route>
+          <Route path="/post" element={<PostPage />} />
         </Routes>
       </Router>
     </div>
