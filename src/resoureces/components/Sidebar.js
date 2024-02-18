@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTh, FaUserAlt, FaRegChartBar, FaShoppingBag, FaThList, FaCommentAlt, FaBars, FaUsers,FaChartBar } from "react-icons/fa";
+import { FaTh, FaUserAlt, FaRegChartBar, FaShoppingBag, FaThList, FaList , FaBars, FaUsers,FaChartBar } from "react-icons/fa";
 import './css/Sidebar.css'
 import { NavLink } from 'react-router-dom';
 
@@ -17,11 +17,11 @@ const Sidebar = ({children}) => {
             name: "List Users",
             icon: <FaUsers />
         },
-        // {
-        //     path: "/analytics",
-        //     name: "Analytics",
-        //     icon: <FaRegChartBar />
-        // },
+        {
+            path: "/postpage",
+            name: "PostNews",
+            icon: <FaList  />
+        },
         {
             path: "/chart",
             name: "Chart",
@@ -32,11 +32,11 @@ const Sidebar = ({children}) => {
             name: "Product",
             icon: <FaShoppingBag />
         },
-        {
-            path: "/productList",
-            name: "Product List",
-            icon: <FaThList />
-        },
+        // {
+        //     path: "/productList",
+        //     name: "Product List",
+        //     icon: <FaThList />
+        // },
         {
             path: "/about",
             name: "About",

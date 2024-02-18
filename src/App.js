@@ -12,6 +12,7 @@ import About from './resoureces/components/pages/About';
 import User from './resoureces/components/pages/User';
 import Register from './resoureces/Users/Register';
 import Chart from './resoureces/components/pages/Chart';
+import PostPage from './resoureces/components/pages/PostPage';
 
 
 function App() {
@@ -70,6 +71,7 @@ function App() {
             <Route path='/user' element={<WithSidebar><User /></WithSidebar>} />
             <Route path='/dashboard' element={<WithSidebar><Dashboard /></WithSidebar>} />
             <Route path='/analytics' element={<WithSidebar><Analytics /></WithSidebar>} />
+            <Route path='/postpage' element={<WithSidebar><PostPage /></WithSidebar>} />
             <Route path='/chart' element={<WithSidebar><Chart/></WithSidebar>} />
             <Route path='/product' element={<WithSidebar><Product /></WithSidebar>} />
             <Route path='/productList' element={<WithSidebar><ProductList /></WithSidebar>} />
