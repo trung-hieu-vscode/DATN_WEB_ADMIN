@@ -1,8 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Navigate, Outlet, Routes } from 'react-router-dom';
 import React, { useState } from 'react';
-import TestLoadapi from './resoureces/components/test/TestLoadapi';
-import Login from './resoureces/components/users/Login';
 import PostPage from './resoureces/components/post';
 
 
@@ -46,13 +44,13 @@ function App() {
         <Routes>
           <Route element={<PublicRoute />}>
             {/* màn hình đăng nhập, quên mật khẩu... ở đây */}
-            <Route path="/login" element={<Login saveUser={saveUserToLocalStorage} />} />
+            {/* <Route path="/login" element={<Login saveUser={saveUserToLocalStorage} />} /> */}
           </Route>
           <Route element={<ProtectedRoute />}>
             {/* sau khi đăng nhập thành công thì chuyển qua đây */}
-            <Route path="/" element={<TestLoadapi />} />
+            <Route path="/" element={<PostPage />} />
           </Route>
-          <Route path="/post" element={<PostPage />} />
+
         </Routes>
       </Router>
     </div>

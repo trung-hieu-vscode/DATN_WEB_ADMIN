@@ -12,7 +12,7 @@ const PostPage = () => {
     const [postData, setPostData] = useState([]);
     const [onOpenModal, setOnOpenModal] = useState(false);
     const [onUpdateModal, setOnUpdateModal] = useState(false);
-
+    const urlAPi = 'https://datnapi.vercel.app/'
     const handleStatus = (status) => {
         if (status === true) {
             return "Còn hàng"
@@ -109,7 +109,7 @@ const PostPage = () => {
                                 <td>{item.price}</td>
                                 <td>{item.created_AT}</td>
                                 <td>
-                                    <img src={item.files} alt="postnews" style={{
+                                    <img src={urlAPi + item.files[0]} alt="postnews" style={{
                                         width: "100px",
                                         height: "100px",
                                         objectFit: "cover",
