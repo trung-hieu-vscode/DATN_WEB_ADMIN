@@ -1,0 +1,26 @@
+/* Thiết lập chiều cao cho biểu đồ */
+.chart-container {
+    height: 400px;
+    margin-bottom: 20px;
+}
+
+/* Thiết lập hiển thị danh sách người dùng */
+.user-list-container {
+    margin-top: 20px;
+}
+
+/* Tùy chỉnh chiều rộng của danh sách người dùng */
+.user-list-container ul {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Tùy chỉnh các mục trong danh sách người dùng */
+.user-list-container li {
+    cursor: pointer;
+}
+
+/* Tùy chỉnh các mục trong danh sách người dùng khi di chuột qua */
+.user-list-container li:hover {
+    background-color: #f5f5f5;
+}
