@@ -1,26 +1,27 @@
 import React from "react";
-import { Chart as ChartJS, defaults } from "chart.js/auto";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
-import '../css/Chart.css'
+import { Doughnut, Line } from "react-chartjs-2";
 import revenueData from '../data/revenueData.json';
 import sourceData from '../data/sourceData.json';
+import "../css/Chart.css";
 
 const Chart = () => {
   return (
-    <div className="App">
-      <div className="dataCard revenueCard">
+    <div className="chart-container">
+      <h1 className="chart-title">Thống kê</h1>
+
+      <div className="chart-card">
         <Line
           data={{
             labels: revenueData.map((data) => data.label),
             datasets: [
               {
-                label: "Revenue",
+                label: "Doanh thu",
                 data: revenueData.map((data) => data.revenue),
                 backgroundColor: "#064FF0",
                 borderColor: "#064FF0",
               },
               {
-                label: "Cost",
+                label: "Chi phí",
                 data: revenueData.map((data) => data.cost),
                 backgroundColor: "#FF3030",
                 borderColor: "#FF3030",
@@ -35,41 +36,15 @@ const Chart = () => {
             },
             plugins: {
               title: {
-                text: "Monthly Revenue & Cost",
+                display: true,
+                text: "Danh thu và chi phí",
               },
             },
           }}
         />
       </div>
 
-      <div className="dataCard customerCard">
-        <Bar
-          data={{
-            labels: sourceData.map((data) => data.label),
-            datasets: [
-              {
-                label: "Count",
-                data: sourceData.map((data) => data.value),
-                backgroundColor: [
-                  "rgba(43, 63, 229, 0.8)",
-                  "rgba(250, 192, 19, 0.8)",
-                  "rgba(253, 135, 135, 0.8)",
-                ],
-                borderRadius: 5,
-              },
-            ],
-          }}
-          options={{
-            plugins: {
-              title: {
-                text: "Revenue Source",
-              },
-            },
-          }}
-        />
-      </div>
-
-      <div className="dataCard categoryCard">
+      <div className="chart-card">
         <Doughnut
           data={{
             labels: sourceData.map((data) => data.label),
@@ -93,7 +68,8 @@ const Chart = () => {
           options={{
             plugins: {
               title: {
-                text: "Revenue Sources",
+                display: true,
+                text: "Số lượng",
               },
             },
           }}
@@ -101,5 +77,6 @@ const Chart = () => {
       </div>
     </div>
   );
-}
-export default Chart;  
+};
+
+export default Chart;

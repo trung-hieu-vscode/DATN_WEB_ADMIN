@@ -1,14 +1,14 @@
 [
     {
-      "label": "Ads",
+      "label": "Quảng cáo",
       "value": 32
     },
     {
-      "label": "Subscriptions",
+      "label": "Đăng ký",
       "value": 45
     },
     {
-      "label": "Sponsorships",
+      "label": "Tin đăng",
       "value": 23
     }
   ]
