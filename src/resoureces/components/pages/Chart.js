@@ -6,10 +6,13 @@ import "../css/Chart.css";
 
 const Chart = () => {
   return (
+    <div>
+      <div className="title-container">
+        <h1 className="">Thống kê</h1>
+      </div>
     <div className="chart-container">
-      <h1 className="chart-title">Thống kê</h1>
 
-      <div className="chart-card">
+      <div className="chart-section">
         <Line
           data={{
             labels: revenueData.map((data) => data.label),
@@ -44,7 +47,7 @@ const Chart = () => {
         />
       </div>
 
-      <div className="chart-card">
+      <div className="chart-section">
         <Doughnut
           data={{
             labels: sourceData.map((data) => data.label),
@@ -75,6 +78,7 @@ const Chart = () => {
           }}
         />
       </div>
+    </div>
     </div>
   );
 };
