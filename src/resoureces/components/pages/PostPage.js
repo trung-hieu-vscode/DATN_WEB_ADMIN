@@ -20,29 +20,6 @@ const PostPage = () => {
         }
     };
 
-    const handleDelete = async id => {
-        try {
-            swal({
-                title: 'Bạn muốn xóa bản tin này?',
-                text: 'Sau khi xóa, bạn sẽ không thể khôi phục bản tin này!',
-                icon: 'warning',
-                buttons: true,
-                dangerMode: true,
-            }).then(willDelete => {
-                if (willDelete) {
-                    deletePostnews(id);
-                    const updatedData = postData.filter(item => item._id !== id);
-                    setPostData(updatedData);
-                    toast.success('Xóa bản tin thành công!');
-                } else {
-                    toast.error('Bạn đã hủy xóa!');
-                }
-            });
-        } catch (error) {
-            console.error('Error deleting post:', error);
-            toast.error('Xóa bản tin thất bại!');
-        }
-    };
 
     useEffect(() => {
         fetchData();
@@ -63,10 +40,6 @@ const PostPage = () => {
         <div className="post-page">
             <h1 className="post-page-title">PostNews</h1>
             <hr />
-            <div className="button-container">
-                <button className="add-button">Thêm</button>
-                {/* Add/Edit buttons go here */}
-            </div>
             <table className="post-table" style={tableStyle}>
                 <thead>
                     <tr>
@@ -78,11 +51,7 @@ const PostPage = () => {
                         <th style={cellStyle}>Price</th>
                         <th style={cellStyle}>Created_AT</th>
                         <th style={cellStyle}>Files</th>
-                        <th style={cellStyle}>Role</th>
-                        <th style={cellStyle}>Activate</th>
                         <th style={cellStyle}>Userid</th>
-                        <th style={cellStyle}>BrandId</th>
-                        <th style={cellStyle}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,16 +73,7 @@ const PostPage = () => {
                                     height={'90%'}
                                 />
                             </td>
-                            <td style={cellStyle}>{item.role}</td>
-                            <td style={cellStyle}>{item.activable ? 'Đã kích hoạt' : 'Chưa kích hoạt'}</td>
                             <td style={cellStyle}>{item.userid}</td>
-                            <td style={cellStyle}>{item.brandId}</td>
-                            <td style={cellStyle}>
-                                <button className="edit-button">Sửa</button>
-                                <button className="delete-button" onClick={() => handleDelete(item._id)}>
-                                    Xóa
-                                </button>
-                            </td>
                         </tr>
                     ))}
                 </tbody>
