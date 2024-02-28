@@ -45,20 +45,33 @@ const User = () => {
 
     const handleCloseModal = () => setShowModal(false);
 
-    const handleLockUser = (userId) => {
-
-        setLockedUsers(prev => ({ ...prev, [userId]: !prev[userId] }));
-
-        setUsers(currentUsers =>
-            currentUsers.map(user => {
-                if (user._id === userId) {
-                    return { ...user, isActivate: !user.isActivate };
-                }
-                return user;
-            })
-        );
+    const handleLockUser = async (userId) => {
+        const userToLock = users.find(user => user._id === userId);
+        if (!userToLock) return;
+    
+        try {
+            const isActivate = !userToLock.isActivate;
+    
+            const response = await AxiosInstance().post(`/lock/${userId}`, { isActivate });
+    
+            if (response.data.success) {
+                setUsers(currentUsers =>
+                    currentUsers.map(user => {
+                        if (user._id === userId) {
+                            return { ...user, isActivate: isActivate };
+                        }
+                        return user;
+                    })
+                );
+                setLockedUsers(prev => ({ ...prev, [userId]: !isActivate }));
+            } else {
+                console.error('Failed to update user status:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error locking/unlocking user:', error);
+        }
     };
-
+    
 
     const renderUserModal = () => (
         <Modal show={showModal} onHide={handleCloseModal}>
