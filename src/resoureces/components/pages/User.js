@@ -50,27 +50,32 @@ const User = () => {
         if (!userToLock) return;
     
         try {
-            const isActivate = !userToLock.isActivate;
+
+            const response = await AxiosInstance().post('/lock', null, {
+                query: {
+                    id: userId
+                }
+            });
+            
     
-            const response = await AxiosInstance().post(`/lock/${userId}`, { isActivate });
-    
-            if (response.data.success) {
+            if (response.success) {
                 setUsers(currentUsers =>
                     currentUsers.map(user => {
                         if (user._id === userId) {
-                            return { ...user, isActivate: isActivate };
+
+                            return { ...user, isActivate: !user.isActivate };
                         }
                         return user;
                     })
                 );
-                setLockedUsers(prev => ({ ...prev, [userId]: !isActivate }));
+                setLockedUsers(prev => ({ ...prev, [userId]: !userToLock.isActivate }));
             } else {
-                console.error('Failed to update user status:', response.data.message);
+                console.error('Failed to update user status:', response.message);
             }
         } catch (error) {
             console.error('Error locking/unlocking user:', error);
         }
-    };
+    };    
     
 
     const renderUserModal = () => (
@@ -145,7 +150,7 @@ const User = () => {
                             <td style={cellStyle}>{user.email}</td>
                             <td style={center}>{user.vip ? <FaCheck /> : <IoClose />}</td>
                             <td style={center}>
-                                <Button variant="primary" onClick={() => handleShowModal(user)}>Details</Button>
+                                <Button variant="container-fluid" onClick={() => handleShowModal(user)}>Details</Button>
                                 &nbsp;
                                 {lockedUsers[user._id] ? (
                                     <Button variant="success" onClick={() => handleLockUser(user._id)}><IoLockOpen /></Button>
