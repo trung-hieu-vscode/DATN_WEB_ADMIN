@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Dashboard.css';
+import AxiosInstance from '../../helper/Axiosintances';
 
 const Dashboard = (props) => {
+    const [userList, setUserList] = useState([]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await AxiosInstance().get('/api/users');
+                setUserList(response); // Assuming response.data is an array of user objects
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+        fetchUsers();
+    }, []);
+
     const barChartData = {
         labels: ['Số lần quảng cáo', 'Số người dùng mới', 'Số tin đăng'],
         datasets: [
@@ -12,7 +27,7 @@ const Dashboard = (props) => {
                 backgroundColor: 'rgba(75,192,192,1)',
                 borderColor: 'rgba(0,0,0,1)',
                 borderWidth: 1,
-                data: [300, 500, 700]  
+                data: [300, 500, 700]
             }
         ]
     };
@@ -26,12 +41,6 @@ const Dashboard = (props) => {
             }]
         }
     };
-    
-    const userList = [
-        { id: 1, name: 'Người dùng 1', email: 'user1@example.com' },
-        { id: 2, name: 'Người dùng 2', email: 'user2@example.com' },
-        { id: 3, name: 'Người dùng 3', email: 'user3@example.com' }
-    ];
 
     return (
         <div className="container-fluid">

@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import AxiosInstance from '../../helper/Axiosintances';
-import { deletePostnews, postNewsData } from '../../Service/PostNewServices';
 import { toast } from 'react-toastify';
-import swal from 'sweetalert';
-// import './postPage.css'; // Import CSS file for styling
+import { Modal, Button } from 'react-bootstrap'; // Import Modal and Button from react-bootstrap
+import { deletePostnews, postNewsData } from '../../Service/PostNewServices';
 
 const PostPage = () => {
     const [postData, setPostData] = useState([]);
     const [searchKeyword, setSearchKeyword] = useState('');
+    const [showModal, setShowModal] = useState(false); // State to control modal visibility
+    const [selectedPost, setSelectedPost] = useState(null); // State to hold selected post data
 
-    const handleStatus = status => (status ? 'Còn hàng' : 'Không còn hàng');
+    // Function to handle opening modal and setting selected post data
+    const handleShowModal = (post) => {
+        setSelectedPost(post);
+        setShowModal(true);
+    };
+
+    // Function to close modal
+    const handleCloseModal = () => setShowModal(false);
 
     const fetchData = async () => {
         try {
@@ -25,28 +32,40 @@ const PostPage = () => {
         fetchData();
     }, []);
 
+    // Function to handle status display
+    const handleStatus = (status) => (status ? 'Còn hàng' : 'Không còn hàng');
+
+    // Function to handle search
     const handleSearch = () => {
-        // Bạn có thể thực hiện logic tìm kiếm ở đây, ví dụ:
-        // Lọc các bản tin có tiêu đề chứa từ khóa tìm kiếm
-        const filteredData = postData.filter(item => item.title.toLowerCase().includes(searchKeyword.toLowerCase()));
+        const keyword = searchKeyword.toLowerCase().trim();
+
+        // If searchKeyword is empty, reset the postData to original data
+        if (!keyword) {
+            fetchData(); // Fetch original data
+            return;
+        }
+
+        // Filter postData based on title containing the keyword
+        const filteredData = postData.filter(item =>
+            item.title.toLowerCase().includes(keyword)
+        );
         setPostData(filteredData);
     };
 
+    // Function to handle sorting by date
     const handleSortByDate = () => {
-        // Sắp xếp dữ liệu theo ngày đăng giảm dần
         const sortedData = [...postData].sort((a, b) => new Date(b.created_AT) - new Date(a.created_AT));
         setPostData(sortedData);
-    };
-
-    const tableStyle = {
-        width: '100%',
-        borderCollapse: 'collapse',
     };
 
     const cellStyle = {
         border: '1px solid #ddd',
         padding: '8px',
         textAlign: 'left',
+    };
+    const tableStyle = {
+        width: '100%',
+        borderCollapse: 'collapse',
     };
 
     return (
@@ -57,16 +76,13 @@ const PostPage = () => {
                 <input
                     type="text"
                     value={searchKeyword}
-                    onChange={e => setSearchKeyword(e.target.value)}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
                     placeholder="Nhập từ muốn tìm kiếm"
                 />
                 <button onClick={handleSearch}>Tìm kiếm</button>
                 <button onClick={handleSortByDate}>Sắp xếp theo ngày đăng</button>
             </div>
             <hr />
-            <table className="post-table" style={tableStyle}>
-                {/* Bảng dữ liệu */}
-            </table>
             <table className="post-table" style={tableStyle}>
                 <thead>
                     <tr>
@@ -103,10 +119,43 @@ const PostPage = () => {
                             <td style={cellStyle}>{item.userid}</td>
                             <td style={cellStyle}>{item.work}</td>
                             <td style={cellStyle}>{item.detailedPost}</td>
+                            <td style={cellStyle}>
+                                <button onClick={() => handleShowModal(item)}>Detailed Post</button>
+                            </td>
                         </tr>
+
                     ))}
                 </tbody>
             </table>
+            {/* Modal */}
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Post Details</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedPost && (
+                        <div>
+                            <p><strong>Title:</strong> {selectedPost.title}</p>
+                            <p><strong>Status:</strong> {handleStatus(selectedPost.status)}</p>
+                            <p><strong>Detail:</strong> {handleStatus(selectedPost.detail)}</p>
+                            <p><strong>Location:</strong> {selectedPost.location}</p>
+                            <p><strong>Price:</strong> {selectedPost.price}</p>
+                            <p><strong>Created At:</strong> {selectedPost.created_AT}</p>
+                            <p><strong>File:</strong> {selectedPost.files}</p>
+                            <p><strong>Email:</strong> {selectedPost.email}</p>
+                            <p><strong>Work:</strong> {selectedPost.work}</p>
+
+                            {/* Add more details as needed */}
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                    {/* You can add more buttons for additional actions */}
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
