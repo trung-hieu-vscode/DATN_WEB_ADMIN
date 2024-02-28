@@ -150,7 +150,7 @@ const User = () => {
                             <td style={cellStyle}>{user.email}</td>
                             <td style={center}>{user.vip ? <FaCheck /> : <IoClose />}</td>
                             <td style={center}>
-                                <Button variant="container-fluid" onClick={() => handleShowModal(user)}>Details</Button>
+                                <Button onClick={() => handleShowModal(user)}>Details</Button>
                                 &nbsp;
                                 {lockedUsers[user._id] ? (
                                     <Button variant="success" onClick={() => handleLockUser(user._id)}><IoLockOpen /></Button>
