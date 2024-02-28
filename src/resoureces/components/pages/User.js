@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import AxiosInstance from '../../helper/Axiosintances';
-import axios from 'axios';
-import AddUserDailog from '../AddUserDailog';
-import EditUserDialog from '../EditUserDailog';
-import swal from 'sweetalert';
-import userList from '../css/userList.css'
+import '../css/userList.css';
+import { IoClose, IoLockClosed, IoLockOpen } from "react-icons/io5";
+import { FaCheck } from "react-icons/fa";
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const User = () => {
     const [users, setUsers] = useState([]);
-    const [showAddUserDialog, setShowAddUserDialog] = useState(false);
-    const [editingUser, setEditingUser] = useState(null);
-    const [showEditUserDialog, setShowEditUserDialog] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [lockedUsers, setLockedUsers] = useState({});
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 const response = await AxiosInstance().get('api/users');
                 if (response && Array.isArray(response.users)) {
-                    setUsers(response.users);
+                    const sortedUsers = response.users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    setUsers(sortedUsers);
                 } else {
                     console.error('Error');
                 }
@@ -25,134 +28,123 @@ const User = () => {
                 console.error('Error fetching users:', error);
             }
         };
-
         fetchUsers();
     }, []);
 
-    const handleOpenAddUserDialog = () => {
-        setShowAddUserDialog(true);
+    const filteredUsers = searchTerm.length === 0
+        ? users
+        : users.filter(user =>
+            (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+
+    const handleShowModal = (user) => {
+        setSelectedUser(user);
+        setShowModal(true);
     };
-    const handleDeleteUser = async (_id) => {
-        swal({
-            title: "Xác nhận xóa người dùng?",
-            text: "Bạn có chắc chắn muốn xóa người dùng này?",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        }).then(async (willDelete) => {
-            if (willDelete) {
-                try {
-                    const result = await AxiosInstance().delete(`api/delete-user?id=${_id}`);
-                    window.location.href = '/user'; 
-                } catch (error) {
-                    console.error('Error deleting user:', error);
-                    swal('Có lỗi xảy ra khi xóa người dùng.', { icon: 'error' });
+
+    const handleCloseModal = () => setShowModal(false);
+
+    const handleLockUser = (userId) => {
+
+        setLockedUsers(prev => ({ ...prev, [userId]: !prev[userId] }));
+
+        setUsers(currentUsers =>
+            currentUsers.map(user => {
+                if (user._id === userId) {
+                    return { ...user, isActivate: !user.isActivate };
                 }
-            }
-        });
-    }
-
-    const handleEditUser = (_id) => {
-
-        const userToEdit = users.find(user => user._id === _id);
-        if (!userToEdit) {
-            swal("Người dùng không tồn tại!", { icon: "error" });
-            return;
-        }
-
-        setEditingUser(userToEdit);
-
-        setShowEditUserDialog(true);
+                return user;
+            })
+        );
     };
 
-    // Style cho bảng
+
+    const renderUserModal = () => (
+        <Modal show={showModal} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+                <Modal.Title>User Details</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {selectedUser && (
+                    <div>
+                        <p><strong>Name:</strong> {selectedUser.name}</p>
+                        <p><strong>Email:</strong> {selectedUser.email}</p>
+                        <p><strong>VIP:</strong> {selectedUser.vip ? "Yes" : "No"}</p>
+                        <p><strong>Phone:</strong> {selectedUser.phone}</p>
+                        <p><strong>Activate:</strong> {selectedUser.isActivate ? " Activated" : "Not Activated"}</p>
+                        <p><strong>Balance:</strong> {selectedUser.balance} vnd</p>
+                    </div>
+                )}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseModal}>
+                    Close
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+
+    // Styles
     const tableStyle = {
         width: '100%',
         borderCollapse: 'collapse',
     };
-
-    // Style cho header và cell
     const cellStyle = {
         border: '1px solid #ddd',
         padding: '8px',
         textAlign: 'left',
     };
+    const center = {
+        border: '1px solid #ddd',
+        padding: '8px',
+        textAlign: 'center',
+    };
+    const lockedStyle = {
+        backgroundColor: '#f8d7da',
+    };
 
     return (
         <div className="container-fluid">
             <h1>User List</h1>
-            <button onClick={handleOpenAddUserDialog}>Create</button>
-            {showAddUserDialog && (
-                <AddUserDailog
-                    onClose={() => setShowAddUserDialog(false)}
-                    onAddUser={(newUser) => {
-                        setUsers([...users, newUser]);
-                        setShowAddUserDialog(false);
-                    }}
-                />
-            )}
+            <input
+                type="text"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ marginBottom: '20px' }}
+            />
             <table className="table" style={tableStyle}>
                 <thead>
                     <tr>
                         <th style={cellStyle}>#</th>
                         <th style={cellStyle}>Name</th>
                         <th style={cellStyle}>Email</th>
-                        <th style={cellStyle}>Phone</th>
-                        <th style={cellStyle}>Level</th>
-                        <th style={cellStyle}>Balance</th>
-                        <th style={cellStyle}>VIP</th>
+                        <th style={center}>VIP</th>
+                        <th style={center}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, index) => (
-                        <tr key={user.id}>
+                    {filteredUsers.map((user, index) => (
+                        <tr key={user._id} style={lockedUsers[user._id] ? lockedStyle : {}}>
                             <td style={cellStyle}>{index + 1}</td>
                             <td style={cellStyle}>{user.name}</td>
                             <td style={cellStyle}>{user.email}</td>
-                            <td style={cellStyle}>{user.phone}</td>
-                            <td style={cellStyle}>{user.level}</td>
-                            <td style={cellStyle}>{user.balance}</td>
-                            <td style={cellStyle}>{user.vip}False</td>
-                            <td style={cellStyle}>
-                                <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
+                            <td style={center}>{user.vip ? <FaCheck /> : <IoClose />}</td>
+                            <td style={center}>
+                                <Button variant="primary" onClick={() => handleShowModal(user)}>Details</Button>
+                                &nbsp;
+                                {lockedUsers[user._id] ? (
+                                    <Button variant="success" onClick={() => handleLockUser(user._id)}><IoLockOpen /></Button>
+                                ) : (
+                                    <Button variant="danger" onClick={() => handleLockUser(user._id)}><IoLockClosed /></Button>
+                                )}
                             </td>
-                            <td style={cellStyle}>
-                                <button onClick={() => handleEditUser(user._id)}>Edit</button>
-                            </td>
-                            {showEditUserDialog && editingUser && (
-                                <EditUserDialog
-                                    user={editingUser}
-                                    onClose={() => {
-                                        setShowEditUserDialog(false);
-                                        setEditingUser(null);
-                                    }}
-                                    onSave={
-                                        async (updatedUser) => {
-                                            try {
-                                                // Gọi API để cập nhật thông tin người dùng
-                                                const response = await AxiosInstance().post(`api/update-user?id=${updatedUser._id}`, updatedUser);
-                                                console.log(response);
-                                                if (response.status == 200) {
-                                                    // Cập nhật danh sách người dùng
-                                                    setUsers(users.map(user => user._id === updatedUser._id ? { ...user, ...updatedUser } : user));
-                                                    // Đóng dialog chỉnh sửa
-                                                    setShowEditUserDialog(false);
-                                                    swal("Người dùng đã được cập nhật thành công!", { icon: "success" });
-                                                } else {
-                                                    throw new Error('Cập nhật không thành công');
-                                                }
-                                            } catch (error) {
-                                                console.error('Lỗi khi cập nhật người dùng:', error);
-                                                swal("Lỗi khi cập nhật thông tin người dùng.", { icon: "error" });
-                                            }
-                                        }
-                                    }
-                                />
-                            )}
                         </tr>
                     ))}
                 </tbody>
             </table>
+            {renderUserModal()}
         </div>
     );
 };
