@@ -48,16 +48,12 @@ const User = () => {
     const handleLockUser = async (userId) => {
         const userToLock = users.find(user => user._id === userId);
         if (!userToLock) return;
-    
+
         try {
 
-            const response = await AxiosInstance().post('/lock', null, {
-                query: {
-                    id: userId
-                }
-            });
-            
-    
+            const response = await AxiosInstance().post(`/api/lock-unlock/user/?userId=${userId}`);
+
+            console.log("click handlelockuser, data user: ", response)
             if (response.success) {
                 setUsers(currentUsers =>
                     currentUsers.map(user => {
@@ -75,8 +71,8 @@ const User = () => {
         } catch (error) {
             console.error('Error locking/unlocking user:', error);
         }
-    };    
-    
+    };
+
 
     const renderUserModal = () => (
         <Modal show={showModal} onHide={handleCloseModal}>
