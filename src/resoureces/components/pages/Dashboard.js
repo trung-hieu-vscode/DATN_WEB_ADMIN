@@ -6,18 +6,32 @@ import AxiosInstance from '../../helper/Axiosintances';
 
 const Dashboard = (props) => {
     const [userList, setUserList] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await AxiosInstance().get('/api/users');
-                setUserList(response); // Assuming response.data is an array of user objects
+                const response = await AxiosInstance().get('api/users');
+                if (response && Array.isArray(response.users)) {
+                    const sortedUsers = response.users.sort((a, b) => new Date(b.balance) - new Date(a.balance));
+                    setUsers(sortedUsers);
+                } else {
+                    console.error('Error');
+                }
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         };
         fetchUsers();
     }, []);
+
+    const filteredUsers = searchTerm.length === 0
+        ? users
+        : users.filter(user =>
+            (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
 
     const barChartData = {
         labels: ['Số lần quảng cáo', 'Số người dùng mới', 'Số tin đăng'],
@@ -56,12 +70,12 @@ const Dashboard = (props) => {
                     </div>
                 </div>
                 <div className="col-md-6">
-                    <h2 className="text-center">Danh sách người dùng</h2>
+                    <h2 className="text-center">Danh sách người nạp</h2>
                     <div className="user-list-container">
                         <ul className="list-group">
-                            {userList.map(user => (
+                            {filteredUsers.map(user => (
                                 <li key={user.id} className="list-group-item">
-                                    <strong>{user.name}</strong> - {user.email}
+                                    <strong>{user.name}</strong> - {user.balance} vnd
                                 </li>
                             ))}
                         </ul>
