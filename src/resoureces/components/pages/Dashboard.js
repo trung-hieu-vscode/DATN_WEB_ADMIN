@@ -5,13 +5,16 @@ import '../css/Dashboard.css';
 import AxiosInstance from '../../helper/Axiosintances';
 
 const Dashboard = (props) => {
-    const [userList, setUserList] = useState([]);
     const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [adCounts, setAdCounts] = useState(0);
+    const [newUserCounts, setNewUserCounts] = useState(0);
+    const [postCounts, setPostCounts] = useState(0);
 
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetchData = async () => {
             try {
+                // Fetching users
                 const response = await AxiosInstance().get('api/users');
                 if (response && Array.isArray(response.users)) {
                     const sortedUsers = response.users.sort((a, b) => new Date(b.balance) - new Date(a.balance));
@@ -20,28 +23,21 @@ const Dashboard = (props) => {
                     console.error('Error');
                 }
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching data:', error);
             }
         };
-        fetchUsers();
+        fetchData();
     }, []);
 
-    const filteredUsers = searchTerm.length === 0
-        ? users
-        : users.filter(user =>
-            (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
-        );
-
     const barChartData = {
-        labels: ['Số lần quảng cáo', 'Số người dùng mới', 'Số tin đăng'],
+        labels: ['Số lượng VIP', 'Số người dùng ', 'Số tin đăng'],
         datasets: [
             {
                 label: 'Dữ liệu',
                 backgroundColor: 'rgba(75,192,192,1)',
                 borderColor: 'rgba(0,0,0,1)',
                 borderWidth: 1,
-                data: [300, 500, 700]
+                data: [postCounts, users.length, adCounts]
             }
         ]
     };
@@ -55,6 +51,13 @@ const Dashboard = (props) => {
             }]
         }
     };
+
+    const filteredUsers = searchTerm.length === 0
+        ? users
+        : users.filter(user =>
+            (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
 
     return (
         <div className="container-fluid">
