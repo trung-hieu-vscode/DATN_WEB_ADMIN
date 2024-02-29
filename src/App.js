@@ -6,13 +6,16 @@ import Login from './resoureces/Users/Login';
 import Sidebar from './resoureces/components/Sidebar';
 import Dashboard from './resoureces/components/pages/Dashboard';
 import Analytics from './resoureces/components/pages/Analytics';
+import Comment from './resoureces/components/pages/Comment';
 import Product from './resoureces/components/pages/Product';
 import ProductList from './resoureces/components/pages/ProductList';
 import About from './resoureces/components/pages/About';
 import User from './resoureces/components/pages/User';
 import Register from './resoureces/Users/Register';
+
 import Chart from './resoureces/components/pages/Chart';
 import PostPage from './resoureces/components/pages/PostPage';
+master
 
 
 function App() {
@@ -60,26 +63,30 @@ function App() {
       <Router>
         <Routes>
           <Route element={<PublicRoute />}>
-          <Route path="/register" element={<Register/>} />
+            <Route path="/register" element={<Register />} />
             {/* màn hình đăng nhập, quên mật khẩu... ở đây */}
             <Route path="/login" element={<Login saveUser={saveUserToLocalStorage} />} />
           </Route>
           <Route element={<ProtectedRoute />}>
             {/* sau khi đăng nhập thành công thì chuyển qua đây */}
             <Route path='/' element={<WithSidebar><Dashboard /></WithSidebar>} />
-            <Route path="/register" element={<Register/>} />
+            <Route path="/register" element={<Register />} />
             <Route path='/user' element={<WithSidebar><User /></WithSidebar>} />
             <Route path='/dashboard' element={<WithSidebar><Dashboard /></WithSidebar>} />
             <Route path='/analytics' element={<WithSidebar><Analytics /></WithSidebar>} />
+
             <Route path='/postpage' element={<WithSidebar><PostPage /></WithSidebar>} />
-            <Route path='/chart' element={<WithSidebar><Chart/></WithSidebar>} />
+            <Route path='/chart' element={<WithSidebar><Chart /></WithSidebar>} />
+
+            <Route path='/comment' element={<WithSidebar><Comment /></WithSidebar>} />
+            <Route path='/test' element={<WithSidebar><TestLoadapi /></WithSidebar>} />
             <Route path='/product' element={<WithSidebar><Product /></WithSidebar>} />
             <Route path='/productList' element={<WithSidebar><ProductList /></WithSidebar>} />
             <Route path='/about' element={<WithSidebar><About /></WithSidebar>} />
-          </Route>
-        </Routes>
-      </Router>
-    </div>
+          </Route >
+        </Routes >
+      </Router >
+    </div >
   );
 }
 
