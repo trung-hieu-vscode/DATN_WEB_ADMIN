@@ -51,11 +51,7 @@ const User = () => {
     
         try {
 
-            const response = await AxiosInstance().post('/lock', null, {
-                query: {
-                    id: userId
-                }
-            });
+            const response = await AxiosInstance().post(`/lock-unclock/${userId}`);
             
     
             if (response.success) {
