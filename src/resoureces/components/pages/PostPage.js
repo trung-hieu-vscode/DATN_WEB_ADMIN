@@ -1,14 +1,66 @@
 import React, { useState, useEffect } from 'react';
+import AxiosInstance from '../../helper/Axiosintances';
 import { toast } from 'react-toastify';
-import { Modal, Button } from 'react-bootstrap';
-import { deletePostnews, postNewsData } from '../../Service/PostNewServices';
+import { Modal, Button, Spinner } from 'react-bootstrap';
+import { IoLockClosed, IoLockOpen } from "react-icons/io5";
+import { postNewsData } from '../../Service/PostNewServices';
 import '../css/userList.css';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const PostPage = () => {
     const [postData, setPostData] = useState([]);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [selectedPost, setSelectedPost] = useState(null); 
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const res = await postNewsData();
+            setPostData(res); // Giả sử response trả về dữ liệu ở trong 'data'
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            toast.error('Lỗi khi tải dữ liệu bản tin!');
+            setLoading(false);
+        }
+    };
+
+    const toggleActivation = async (postId, activable) => {
+        const action = activable ? 'ẩn' : 'hiện'; // Hiện hoặc ẩn bài viết tùy thuộc vào trạng thái hiện tại
+        MySwal.fire({
+            title: `Bạn có chắc chắn muốn ${action} bài viết này không?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: `Đúng, ${action} bài viết!`
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await AxiosInstance().post(`/api/postnews/activable/${postId}`);
+                    if (response.success) {
+                        toast.success(`Bài viết đã được ${action} thành công.`);
+                        fetchData();
+                    } else {
+                        toast.error(`Có lỗi xảy ra khi ${action} bài viết: ${response.message}`);
+                    }
+                } catch (error) {
+                    console.error(`Error ${action}ing post:`, error);
+                    toast.error(`Lỗi khi ${action} bài viết.`);
+                }
+            }
+        });
+    };
+
 
     const handleShowModal = (post) => {
         setSelectedPost(post);
@@ -17,55 +69,22 @@ const PostPage = () => {
 
     const handleCloseModal = () => setShowModal(false);
 
-    const fetchData = async () => {
-        try {
-            const res = await postNewsData();
-            setPostData(res);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            toast.error('Lỗi khi tải dữ liệu bản tin!');
-        }
-    };
+    const filteredPostData = postData.filter(post =>
+        post.title.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const handleStatus = (status) => (status ? 'Còn hàng' : 'Không còn hàng');
-
-    const handleSearch = () => {
-        const keyword = searchKeyword.toLowerCase().trim();
-
-        if (!keyword) {
-            fetchData();
-            return;
-        }
-
-        const filteredData = postData.filter(item =>
-            item.title.toLowerCase().includes(keyword)
+    if (loading) {
+        return (
+            <div className="text-center mt-5">
+                <Spinner animation="border" role="status" />
+                <p className="mt-3">Loading post page...</p>
+            </div>
         );
-        setPostData(filteredData);
-    };
-
-    const handleSortByDate = () => {
-        const sortedData = [...postData].sort((a, b) => new Date(b.created_AT) - new Date(a.created_AT));
-        setPostData(sortedData);
-    };
-
-    const cellStyle = {
-        border: '1px solid #ddd',
-        padding: '8px',
-        textAlign: 'left',
-    };
-    const tableStyle = {
-        width: '100%',
-        borderCollapse: 'collapse',
-    };
+    }
 
     return (
         <div className="container-fluid">
             <h1 className="post-page-title">PostNews</h1>
-            <hr />
             <div>
                 <input
                     type="text"
@@ -73,48 +92,44 @@ const PostPage = () => {
                     onChange={(e) => setSearchKeyword(e.target.value)}
                     placeholder="Nhập từ muốn tìm kiếm"
                 />
-                <button onClick={handleSearch}>Tìm kiếm</button>
-                <button onClick={handleSortByDate}>Sắp xếp theo ngày đăng</button>
             </div>
-            <hr />
-            <table className="table" style={tableStyle}>
+            <table className="table">
                 <thead>
                     <tr>
-                        <th style={cellStyle}>#</th>
-                        <th style={cellStyle}>Title</th>
-                        <th style={cellStyle}>Status</th>
-                        <th style={cellStyle}>Price</th>
-                        <th style={cellStyle}>Created AT</th>
-                        <th style={cellStyle}>Image</th>
-                        <th style={cellStyle}>DetailedPost</th>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {postData.map((item, index) => (
-                        <tr key={item._id}>
-                            <td style={cellStyle}>{index + 1}</td>
-                            <td style={cellStyle}>{item.title}</td>
-                            <td style={cellStyle}>{handleStatus(item.status)}</td>
-                            <td style={cellStyle}>{item.price}</td>
-                            <td style={cellStyle}>{item.created_AT}</td>
-                            <td style={cellStyle}>
-                                <img
-                                    src={`https://datnapi.vercel.app/${item.files[0]}`}
-                                    alt="postnews"
-                                    className="post-image"
-                                    width={'50%'}
-                                    height={'50%'}
-                                />
+                    {filteredPostData.map((post, index) => (
+                        <tr key={post._id}>
+                            <td>{index + 1}</td>
+                            <td>{post.title}</td>
+                            <td>
+                                {post.files && post.files.length > 0 && (
+                                    <img src={`https://datnapi.vercel.app/${post.files[0]}`} alt="post" style={{ width: '100px', height: 'auto' }} />
+                                )}
                             </td>
-                            <td style={cellStyle}>
-                                <Button onClick={() => handleShowModal(item)}>Detailed Post</Button>
+                            <td>{post.activable ? 'Active' : 'Inactive'}</td>
+                            <td>
+                                <Button variant="info" onClick={() => handleShowModal(post)}>
+                                    Details
+                                </Button>
+                                <Button
+                                    variant={post.activable ? 'success' : 'secondary'}
+                                    onClick={() => toggleActivation(post._id, post.activable)}
+                                >
+                                    {post.activable ? <IoLockOpen /> : <IoLockClosed />}
+                                </Button>
                             </td>
                         </tr>
-
                     ))}
                 </tbody>
             </table>
-            {/* Modal */}
+
             <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>Post Details</Modal.Title>
@@ -123,14 +138,17 @@ const PostPage = () => {
                     {selectedPost && (
                         <div>
                             <p><strong>Title:</strong> {selectedPost.title}</p>
-                            <p><strong>Status:</strong> {handleStatus(selectedPost.status)}</p>
-                            <p><strong>Detail:</strong> {handleStatus(selectedPost.detail)}</p>
+                            <p><strong>Status:</strong> {selectedPost.status}</p>
+                            <p><strong>Detail:</strong> {selectedPost.detail}</p>
                             <p><strong>Location:</strong> {selectedPost.location}</p>
-                            <p><strong>Price:</strong> {selectedPost.price}</p>
-                            <p><strong>Created At:</strong> {selectedPost.created_AT}</p>
-                            {/* <p><strong>File:</strong> {selectedPost.files}</p> */}
-                            <p><strong>Email:</strong> {selectedPost.email}</p>
-                            <p><strong>Work:</strong> {selectedPost.work}</p>
+                            <p><strong>Price:</strong> {selectedPost.price} VND</p>
+                            <p><strong>Created_AT:</strong> {selectedPost.created_AT}</p>
+                            <p><strong>Role:</strong> {selectedPost.role}</p>
+                            <p><strong>Brandid:</strong> {selectedPost.brandid}</p>
+                            <p><strong>IdCategory:</strong> {selectedPost.idCategory}</p>
+                            <p><strong>Userid:</strong> {selectedPost.userid}</p>
+                            <p><strong>Status:</strong> {selectedPost.activable ? 'Active' : 'Inactive'}</p>
+                            <p><strong>Description:</strong> {selectedPost.description}</p>
                         </div>
                     )}
                 </Modal.Body>

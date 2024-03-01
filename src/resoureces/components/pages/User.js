@@ -7,6 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import Button from 'react-bootstrap/Button';
+import { Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const MySwal = withReactContent(Swal);
@@ -17,8 +18,10 @@ const User = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [lockedUsers, setLockedUsers] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const fetchUsers = async () => {
+        setLoading(true);
         try {
             const response = await AxiosInstance().get('api/users');
             if (response && Array.isArray(response.users)) {
@@ -30,6 +33,7 @@ const User = () => {
         } catch (error) {
             console.error('Error fetching users:', error);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -134,6 +138,15 @@ const User = () => {
     const lockedStyle = {
         backgroundColor: '#f8d7da',
     };
+
+    if (loading) {
+        return (
+            <div className="text-center mt-5"> 
+                <Spinner animation="border" role="status" />
+                <p className="mt-3">Loading users...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="container-fluid">
