@@ -46,7 +46,7 @@ const PostPage = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await AxiosInstance().post(`/api/activable/:id=${postId}`);
+                    const response = await AxiosInstance().post(`/api/postnews/activable/${postId}`);
                     if (response.success) {
                         toast.success(`Bài viết đã được ${action} thành công.`);
                         fetchData();
@@ -60,7 +60,7 @@ const PostPage = () => {
             }
         });
     };
-    
+
 
     const handleShowModal = (post) => {
         setSelectedPost(post);
