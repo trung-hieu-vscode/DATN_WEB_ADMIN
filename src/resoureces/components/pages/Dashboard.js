@@ -1,24 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button, Spinner, Navbar, FormControl, Form } from 'react-bootstrap';
 import '../css/Dashboard.css';
 import AxiosInstance from '../../helper/Axiosintances';
+import { postNewsData } from '../../Service/PostNewServices';
 
 const Dashboard = (props) => {
     const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [adCounts, setAdCounts] = useState(0);
-    const [newUserCounts, setNewUserCounts] = useState(0);
     const [postCounts, setPostCounts] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetching users
-                const response = await AxiosInstance().get('api/users');
-                if (response && Array.isArray(response.users)) {
-                    const sortedUsers = response.users.sort((a, b) => new Date(b.balance) - new Date(a.balance));
+                setLoading(true);
+                const responseUsers = await AxiosInstance().get('api/users');
+                if (responseUsers && Array.isArray(responseUsers.users)) {
+                    const sortedUsers = responseUsers.users.sort((a, b) => new Date(b.balance) - new Date(a.balance));
                     setUsers(sortedUsers);
+                } else {
+                    console.error('Error');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await postNewsData();
+                if (response && Array.isArray(response)) {
+                    setPostCounts(response);
                 } else {
                     console.error('Error');
                 }
@@ -26,18 +46,34 @@ const Dashboard = (props) => {
                 console.error('Error fetching data:', error);
             }
         };
-        fetchData();
+        fetchPost();
+    }, []);
+
+    useEffect(() => {
+        const fetchAd = async () => {
+            try {
+                const response = await AxiosInstance().get('api/vips');
+                if (response && Array.isArray(response)) {
+                    setAdCounts(response);
+                } else {
+                    console.error('Error');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchAd();
     }, []);
 
     const barChartData = {
-        labels: ['Số lượng VIP', 'Số người dùng ', 'Số tin đăng'],
+        labels: ['Số lượng VIP', 'Số người dùng', 'Số tin đăng'],
         datasets: [
             {
                 label: 'Dữ liệu',
                 backgroundColor: 'rgba(75,192,192,1)',
                 borderColor: 'rgba(0,0,0,1)',
                 borderWidth: 1,
-                data: [postCounts, users.length, adCounts]
+                data: [adCounts.length, users.length, postCounts.length]
             }
         ]
     };
@@ -59,6 +95,15 @@ const Dashboard = (props) => {
             (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
+    if (loading) {
+        return (
+            <div className="text-center mt-5">
+                <Spinner animation="border" role="status" />
+                <p className="mt-3">Đang tải bảng điều khiển...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="container-fluid">
             <h1 className="text-center mt-3 mb-5">Dashboard Page</h1>
@@ -73,7 +118,7 @@ const Dashboard = (props) => {
                     </div>
                 </div>
                 <div className="col-md-6">
-                    <h2 className="text-center">Danh sách người nạp</h2>
+                    <h2 className="text-center">Xếp hạng người nạp</h2>
                     <div className="user-list-container">
                         <ul className="list-group">
                             {filteredUsers.map(user => (

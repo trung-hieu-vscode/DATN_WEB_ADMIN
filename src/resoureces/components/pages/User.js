@@ -3,11 +3,9 @@ import AxiosInstance from '../../helper/Axiosintances';
 import '../css/userList.css';
 import { IoClose, IoLockClosed, IoLockOpen, IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa";
-import Modal from 'react-bootstrap/Modal';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import Button from 'react-bootstrap/Button';
-import { Spinner } from 'react-bootstrap';
+import { Modal, Button, Spinner, Navbar, FormControl, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const MySwal = withReactContent(Swal);
@@ -25,7 +23,11 @@ const User = () => {
         try {
             const response = await AxiosInstance().get('api/users');
             if (response && Array.isArray(response.users)) {
-                const sortedUsers = response.users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const unlockedUsers = response.users.filter(user => user.isActivate);
+
+                const lockedUsers = response.users.filter(user => !user.isActivate);
+
+                const sortedUsers = [...unlockedUsers, ...lockedUsers];
                 setUsers(sortedUsers);
             } else {
                 console.error('Error fetching users');
@@ -55,15 +57,15 @@ const User = () => {
     const handleCloseModal = () => setShowModal(false);
 
     const handleLockUser = async (userId, isActivate) => {
-        const action = isActivate ? 'lock' : 'unlock';
+        const action = isActivate ? 'mở khóa' : 'khóa';
         MySwal.fire({
-            title: `Are you sure?`,
-            text: `Do you really want to ${action} this user?`,
+            title: `Bạn có chắc chắn muốn ${action} người dùng này không?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: `Yes, ${action} it!`
+            confirmButtonText: `Đúng, ${action} người dùng này!`,
+            cancelButtonText: 'Hủy',
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
@@ -98,23 +100,23 @@ const User = () => {
     const renderUserModal = () => (
         <Modal show={showModal} onHide={handleCloseModal}>
             <Modal.Header closeButton>
-                <Modal.Title>User Details</Modal.Title>
+                <Modal.Title>Thông tin chi tiết người dùng</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {selectedUser && (
                     <div>
-                        <p><strong>Name:</strong> {selectedUser.name}</p>
+                        <p><strong>Tên người dùng:</strong> {selectedUser.name}</p>
                         <p><strong>Email:</strong> {selectedUser.email}</p>
-                        <p><strong>VIP:</strong> {selectedUser.vip ? "Yes" : "No"}</p>
-                        <p><strong>Phone:</strong> {selectedUser.phone}</p>
+                        <p><strong>VIP:</strong> {selectedUser.vip ? "Đã có VIP" : "Không có VIP"}</p>
+                        <p><strong>Số điện thoại:</strong> {selectedUser.phone}</p>
                         {/* <p><strong>Activate:</strong> {selectedUser.isActivate ? " Activated" : "Not Activated"}</p> */}
-                        <p><strong>Balance:</strong> {selectedUser.balance} vnd</p>
+                        <p><strong>Số tiền:</strong> {selectedUser.balance} vnd</p>
                     </div>
                 )}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseModal}>
-                    Close
+                    Đóng
                 </Button>
             </Modal.Footer>
         </Modal>
@@ -141,32 +143,40 @@ const User = () => {
 
     if (loading) {
         return (
-            <div className="text-center mt-5"> 
+            <div className="text-center mt-5">
                 <Spinner animation="border" role="status" />
-                <p className="mt-3">Loading users...</p>
+                <p className="mt-3">Đang tải danh sách người dùng...</p>
             </div>
         );
     }
 
     return (
         <div className="container-fluid">
-            <h1>User List</h1>
-            <input
-                type="text"
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ marginBottom: '20px' }}
-            />
+            <h1 className="display-4 post-page-title">Danh sách người dùng</h1>
+            <Navbar bg="light" expand="lg" className="mb-3">
+                <Navbar.Brand href="#home">Tìm Kiếm</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Form inline>
+                        <FormControl
+                            type="text"
+                            placeholder="Tìm kiếm người dùng..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ marginBottom: '0px' }}
+                        />
+                    </Form>
+                </Navbar.Collapse>
+            </Navbar>
             <table className="table" style={tableStyle}>
                 <thead>
                     <tr>
-                        <th style={cellStyle}>#</th>
-                        <th style={cellStyle}>Name</th>
+                        <th style={cellStyle}>STT</th>
+                        <th style={cellStyle}>Tên người dùng</th>
                         <th style={cellStyle}>Email</th>
                         <th style={center}>VIP</th>
-                        <th style={center}>Activate</th>
-                        <th style={center}>Actions</th>
+                        <th style={center}>Trạng thái</th>
+                        <th style={center}></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -176,15 +186,16 @@ const User = () => {
                             <td style={cellStyle}>{user.name}</td>
                             <td style={cellStyle}>{user.email}</td>
                             <td style={center}>{user.vip ? <FaCheck /> : <IoClose />}</td>
-                            <td style={center} >
-                                {user.isActivate ? (
-                                    <IoCheckmarkCircleSharp style={{ color: 'green' }} />
-                                ) : (
-                                    <IoCloseCircleSharp style={{ color: 'red' }} />
-                                )}
+                            <td style={{
+                                ...center,
+                                backgroundColor: user.isActivate ? '#c3e6cb' : '#f5c6cb',
+                                color: user.isActivate ? 'green' : 'red',
+                            }}>
+                                {user.isActivate ? 'Không khóa' : 'Đã khóa'}
                             </td>
+
                             <td style={center}>
-                                <Button onClick={() => handleShowModal(user)}>Details</Button>
+                                <Button onClick={() => handleShowModal(user)}>Chi tiết</Button>
                                 &nbsp;
                                 {user.isActivate ? (
                                     <Button variant="success" onClick={() => handleLockUser(user._id)}><IoLockOpen /></Button>

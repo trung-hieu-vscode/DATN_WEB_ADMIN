@@ -84,3 +84,17 @@
         margin-left: 0; /* Reset margin for bars */
     }
 }
+
+.main-content {
+    transition: margin-left 0.5s ease;
+    padding: 20px;
+  }
+  
+  .sidebar-expanded .main-content {
+    margin-left: 250px; /* same as the expanded sidebar width */
+  }
+  
+  .sidebar-collapsed .main-content {
+    margin-left: 50px; /* same as the collapsed sidebar width */
+  }
+  

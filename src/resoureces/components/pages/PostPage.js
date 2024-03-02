@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AxiosInstance from '../../helper/Axiosintances';
 import { toast } from 'react-toastify';
-import { Modal, Button, Spinner } from 'react-bootstrap';
+import { Modal, Button, Spinner, Navbar, FormControl, Form } from 'react-bootstrap';
 import { IoLockClosed, IoLockOpen } from "react-icons/io5";
 import { postNewsData } from '../../Service/PostNewServices';
 import '../css/userList.css';
@@ -25,7 +25,7 @@ const PostPage = () => {
         setLoading(true);
         try {
             const res = await postNewsData();
-            setPostData(res); // Giả sử response trả về dữ liệu ở trong 'data'
+            setPostData(res);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -35,32 +35,34 @@ const PostPage = () => {
     };
 
     const toggleActivation = async (postId, activable) => {
-        const action = activable ? 'ẩn' : 'hiện'; // Hiện hoặc ẩn bài viết tùy thuộc vào trạng thái hiện tại
+        const action = activable ? 'ẩn' : 'hiện';
         MySwal.fire({
             title: `Bạn có chắc chắn muốn ${action} bài viết này không?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: `Đúng, ${action} bài viết!`
+            confirmButtonText: `Đúng, ${action} bài viết!`,
+            cancelButtonText: 'Hủy',
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
                     const response = await AxiosInstance().post(`/api/postnews/activable/${postId}`);
-                    if (response.success) {
-                        toast.success(`Bài viết đã được ${action} thành công.`);
+                    if (response && response.success) {
                         fetchData();
                     } else {
-                        toast.error(`Có lỗi xảy ra khi ${action} bài viết: ${response.message}`);
                     }
+                    fetchData();
                 } catch (error) {
-                    console.error(`Error ${action}ing post:`, error);
-                    toast.error(`Lỗi khi ${action} bài viết.`);
+                    MySwal.fire(
+                        'Error!',
+                        `Error ${action}ing bài viết: ${error.message}`,
+                        'error'
+                    );
                 }
             }
         });
     };
-
 
     const handleShowModal = (post) => {
         setSelectedPost(post);
@@ -69,52 +71,85 @@ const PostPage = () => {
 
     const handleCloseModal = () => setShowModal(false);
 
-    const filteredPostData = postData.filter(post =>
-        post.title.toLowerCase().includes(searchKeyword.toLowerCase())
-    );
+    const filteredPostData = postData
+        .filter(post => post.title.toLowerCase().includes(searchKeyword.toLowerCase()))
+        .sort((a, b) => b.activable - a.activable
+        );
 
     if (loading) {
         return (
             <div className="text-center mt-5">
                 <Spinner animation="border" role="status" />
-                <p className="mt-3">Loading post page...</p>
+                <p className="mt-3">Đang tải danh sách bài đăng...</p>
             </div>
         );
     }
 
+    // Styles
+    const tableStyle = {
+        width: '100%',
+        borderCollapse: 'collapse',
+    };
+    const cellStyle = {
+        border: '1px solid #ddd',
+        padding: '8px',
+        textAlign: 'left',
+    };
+    const center = {
+        border: '1px solid #ddd',
+        padding: '8px',
+        textAlign: 'center',
+    };
+    const lockedStyle = {
+        backgroundColor: '#f8d7da',
+    };
+
     return (
         <div className="container-fluid">
-            <h1 className="post-page-title">PostNews</h1>
-            <div>
-                <input
-                    type="text"
-                    value={searchKeyword}
-                    onChange={(e) => setSearchKeyword(e.target.value)}
-                    placeholder="Nhập từ muốn tìm kiếm"
-                />
-            </div>
-            <table className="table">
+            <h1 className="display-4 post-page-title">Danh sách bài đăng</h1>
+            <Navbar bg="light" expand="lg" className="mb-3">
+                <Navbar.Brand href="#home">Tìm Kiếm</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Form inline>
+                        <FormControl
+                            type="text"
+                            placeholder="Nhập từ muốn tìm kiếm"
+                            className="mr-sm-2"
+                            value={searchKeyword}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
+                        />
+                    </Form>
+                </Navbar.Collapse>
+            </Navbar>
+            <table className="table" style={tableStyle}>
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Title</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th style={center}>STT</th>
+                        <th style={center}>Tiều đề</th>
+                        <th style={center}>Hình ảnh</th>
+                        <th style={center}>Trạng thái</th>
+                        <th style={cellStyle}></th>
                     </tr>
                 </thead>
                 <tbody>
                     {filteredPostData.map((post, index) => (
                         <tr key={post._id}>
-                            <td>{index + 1}</td>
-                            <td>{post.title}</td>
-                            <td>
+                            <td style={cellStyle}>{index + 1}</td>
+                            <td style={cellStyle}>{post.title}</td>
+                            <td style={center}>
                                 {post.files && post.files.length > 0 && (
                                     <img src={`https://datnapi.vercel.app/${post.files[0]}`} alt="post" style={{ width: '100px', height: 'auto' }} />
                                 )}
                             </td>
-                            <td>{post.activable ? 'Active' : 'Inactive'}</td>
-                            <td>
+                            <td style={{
+                                ...center,
+                                backgroundColor: post.activable ? '#c3e6cb' : '#f5c6cb',
+                                color: post.activable ? 'green' : 'red',
+                            }}>
+                                {post.activable ? 'Hiện bài viết' : 'Ản bài viết'}
+                            </td>
+                            <td style={center}>
                                 <Button variant="info" onClick={() => handleShowModal(post)}>
                                     Details
                                 </Button>
