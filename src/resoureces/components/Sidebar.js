@@ -26,6 +26,7 @@ const Sidebar = ({ children }) => {
             name: "PostNews",
             icon: <FaList />
         },
+
         {
             path: "/comment",
             name: "Comment",
@@ -36,26 +37,38 @@ const Sidebar = ({ children }) => {
             name: "Product",
             icon: <FaShoppingBag />
         },
+
+        // {
+        //     path: "/chart",
+        //     name: "Chart",
+        //     icon: <FaChartBar />
+        // },
+        // {
+        //     path: "/product",
+        //     name: "Product",
+        //     icon: <FaShoppingBag />
+        // },
         // {
         //     path: "/productList",
         //     name: "Product List",
         //     icon: <FaThList />
         // },
-        {
-            path: "/about",
-            name: "About",
-            icon: <FaUserAlt />
-        },
+        // {
+        //     path: "/about",
+        //     name: "About",
+        //     icon: <FaUserAlt />
+        // },
     ]
     return (
-        <div className='a'>
-            <div style={{ width: isOpen ? "250px" : "50px" }} className='sidebar fixed-top'>
+        <div className={`layout ${isOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+            <div className='sidebar fixed-top' style={{ width: isOpen ? "250px" : "50px" }}>
                 <div className='top_section'>
                     <h1 style={{ display: isOpen ? "block" : "none" }} className='logo'>Logo</h1>
                     <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className='bars'>
                         <FaBars onClick={toggle} />
                     </div>
                 </div>
+
                 {
                     menuItem.map((item, index) => (
                         <NavLink to={item.path} key={index} className="link" activeclassName="active">
@@ -64,9 +77,17 @@ const Sidebar = ({ children }) => {
                         </NavLink>
                     ))
                 }
+                {menuItem.map((item, index) => (
+                    <NavLink to={item.path} key={index} className="link" activeClassName="active">
+                        <div className="icon">{item.icon}</div>
+                        <div style={{ display: isOpen ? "block" : "none" }} className="link_text">{item.name}</div>
+                    </NavLink>
+                ))}
             </div>
-            <main>{children}</main>
-        </div>
+            <div className="main-content">
+                {children}
+            </div >
+        </div >
     );
 };
 
