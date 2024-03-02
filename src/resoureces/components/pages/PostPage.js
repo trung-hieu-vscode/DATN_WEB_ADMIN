@@ -172,18 +172,18 @@ const PostPage = () => {
                 <Modal.Body>
                     {selectedPost && (
                         <div>
-                            <p><strong>Title:</strong> {selectedPost.title}</p>
-                            <p><strong>Status:</strong> {selectedPost.status}</p>
-                            <p><strong>Detail:</strong> {selectedPost.detail}</p>
-                            <p><strong>Location:</strong> {selectedPost.location}</p>
-                            <p><strong>Price:</strong> {selectedPost.price} VND</p>
-                            <p><strong>Created_AT:</strong> {selectedPost.created_AT}</p>
-                            <p><strong>Role:</strong> {selectedPost.role}</p>
-                            <p><strong>Brandid:</strong> {selectedPost.brandid}</p>
-                            <p><strong>IdCategory:</strong> {selectedPost.idCategory}</p>
-                            <p><strong>Userid:</strong> {selectedPost.userid}</p>
-                            <p><strong>Status:</strong> {selectedPost.activable ? 'Active' : 'Inactive'}</p>
-                            <p><strong>Description:</strong> {selectedPost.description}</p>
+                            <p><strong>Tiêu đề:</strong> {selectedPost.title}</p>
+                            <p><strong>Trạng Thái:</strong> {selectedPost.status}</p>
+                            <p><strong>Chi tiết:</strong> {selectedPost.detail}</p>
+                            <p><strong>Vị trí:</strong> {selectedPost.location}</p>
+                            <p><strong>Giá:</strong> {selectedPost.price} VND</p>
+                            <p><strong>Ngày đăng:</strong> {selectedPost.created_AT}</p>
+                            <p><strong>Vai trò :</strong> {selectedPost.role}</p>
+                            <p><strong>Nhãn Hiệu:</strong> {selectedPost.brandid}</p>
+                            <p><strong>Phân Loại:</strong> {selectedPost.idCategory}</p>
+                            <p><strong>Email:</strong> {selectedPost.email}</p>
+                            {/* <p><strong>Status:</strong> {selectedPost.activable ? 'Active' : 'Inactive'}</p>
+                            <p><strong>Description:</strong> {selectedPost.description}</p> */}
                         </div>
                     )}
                 </Modal.Body>
