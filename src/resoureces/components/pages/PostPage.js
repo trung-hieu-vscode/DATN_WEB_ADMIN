@@ -16,7 +16,6 @@ const PostPage = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [loading, setLoading] = useState(false);
-
     useEffect(() => {
         fetchData();
     }, []);
@@ -33,7 +32,6 @@ const PostPage = () => {
             setLoading(false);
         }
     };
-
     const toggleActivation = async (postId, activable) => {
         const action = activable ? 'ẩn' : 'hiện';
         MySwal.fire({
@@ -73,8 +71,7 @@ const PostPage = () => {
 
     const filteredPostData = postData
         .filter(post => post.title.toLowerCase().includes(searchKeyword.toLowerCase()))
-        .sort((a, b) => b.activable - a.activable
-        );
+        .sort((a, b) => b.activable - a.activable);
 
     if (loading) {
         return (
@@ -100,10 +97,6 @@ const PostPage = () => {
         padding: '8px',
         textAlign: 'center',
     };
-    const lockedStyle = {
-        backgroundColor: '#f8d7da',
-    };
-
     return (
         <div className="container-fluid">
             <h1 className="display-4 post-page-title">Danh sách bài đăng</h1>
@@ -138,7 +131,7 @@ const PostPage = () => {
                             <td style={cellStyle}>{index + 1}</td>
                             <td style={cellStyle}>{post.title}</td>
                             <td style={center}>
-                                {post.files && post.files.length > 0 && (
+                                {Array.isArray(post.files) && post.files.length > 0 && (
                                     <img src={`https://datnapi.vercel.app/${post.files[0]}`} alt="post" style={{ width: '100px', height: 'auto' }} />
                                 )}
                             </td>
@@ -147,7 +140,7 @@ const PostPage = () => {
                                 backgroundColor: post.activable ? '#c3e6cb' : '#f5c6cb',
                                 color: post.activable ? 'green' : 'red',
                             }}>
-                                {post.activable ? 'Hiện bài viết' : 'Ản bài viết'}
+                                {typeof post.activable === 'boolean' ? (post.activable ? 'Hiện bài viết' : 'Ẩn bài viết') : ''}
                             </td>
                             <td style={center}>
                                 <Button variant="info" onClick={() => handleShowModal(post)}>
@@ -157,14 +150,14 @@ const PostPage = () => {
                                     variant={post.activable ? 'success' : 'secondary'}
                                     onClick={() => toggleActivation(post._id, post.activable)}
                                 >
-                                    {post.activable ? <IoLockOpen /> : <IoLockClosed />}
+                                    {typeof post.activable === 'boolean' ? (post.activable ? <IoLockOpen /> : <IoLockClosed />) : null}
                                 </Button>
                             </td>
+
                         </tr>
                     ))}
                 </tbody>
             </table>
-
             <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>Post Details</Modal.Title>
@@ -179,11 +172,10 @@ const PostPage = () => {
                             <p><strong>Giá:</strong> {selectedPost.price} VND</p>
                             <p><strong>Ngày đăng:</strong> {selectedPost.created_AT}</p>
                             <p><strong>Vai trò :</strong> {selectedPost.role}</p>
-                            <p><strong>Nhãn Hiệu:</strong> {selectedPost.brandid}</p>
-                            <p><strong>Phân Loại:</strong> {selectedPost.idCategory}</p>
-                            <p><strong>Email:</strong> {selectedPost.email}</p>
-                            {/* <p><strong>Status:</strong> {selectedPost.activable ? 'Active' : 'Inactive'}</p>
-                            <p><strong>Description:</strong> {selectedPost.description}</p> */}
+                            {selectedPost.brandid != null ? (<p><strong>Nhãn Hiệu: </strong> {selectedPost.brandid.nameBrand}</p>) : <p><strong>Nhãn Hiệu: </strong>Không có dữ liệu</p>}
+                            {selectedPost.idCategory != null ? (<p><strong>Danh mục: </strong> {selectedPost.idCategory.name}</p>) : <p><strong>Danh mục: </strong>Không có dữ liệu</p>}
+                            {selectedPost.userid != null ? (<p><strong>Email: </strong> {selectedPost.userid.email}</p>) : <p><strong>Email: </strong>Không có dữ liệu</p>}
+
                         </div>
                     )}
                 </Modal.Body>
