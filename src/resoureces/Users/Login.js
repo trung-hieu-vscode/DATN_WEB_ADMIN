@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import AxiosInstance from '../helper/Axiosintances';
 import user from '../components/css/user.css'
 import { FaUser, FaLock } from "react-icons/fa";
+import Swal from 'sweetalert2';
 
 const Login = (props) => {
   const { saveUser } = props;
-  const [email, setEmail] = useState('thanhdev1@gmail.com');
+  const [email, setEmail] = useState('user3@gmail.com');
   const [password, setPassword] = useState('111111');
+  const [loading, setLoading] = useState(false); // State variable for loading state
 
   const handleLogin = async () => {
     try {
+      setLoading(true); // Set loading state to true when login button is clicked
       const body = { email, password };
       const result = await AxiosInstance().post('api/login-user', body);
   
@@ -17,12 +20,29 @@ const Login = (props) => {
         console.log('Đăng nhập thành công');
         saveUser(result.user);
         localStorage.setItem('user', JSON.stringify(result.user));
-        alert('Đăng nhập thành công!');
+        Swal.fire({
+          icon: 'success',
+          title: 'Đăng nhập thành công!',
+          showConfirmButton: false,
+          timer: 1500
+        });
       } else {
         console.log('Đăng nhập thất bại');
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Đăng nhập thất bại!'
+        });
       }
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Đã xảy ra lỗi khi đăng nhập!'
+      });
+    } finally {
+      setLoading(false); // Reset loading state regardless of login success or failure
     }
   };
 
@@ -58,7 +78,9 @@ const Login = (props) => {
             <a href="#"> Forgot password ?</a>
           </div>
 
-          <button type="button" onClick={handleLogin}>Login</button>
+          <button type="button" onClick={handleLogin} disabled={loading}>
+            {loading ? 'Loading...' : 'Login'}
+          </button>
 
           <div className="register-link">
             <p style={{ color: "#fff" }}> Don't have an account? <a href="/Register">register</a></p>

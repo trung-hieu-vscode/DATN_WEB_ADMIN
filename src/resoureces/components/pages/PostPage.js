@@ -48,11 +48,11 @@ const PostPage = () => {
             if (result.isConfirmed) {
                 try {
                     const response = await AxiosInstance().post(`/api/postnews/activable/${postId}`);
-                    if (response && response.success) {
+                    if (response && response.data.success) {
                         fetchData();
                     } else {
+                        toast.error('Có lỗi xảy ra!');
                     }
-                    fetchData();
                 } catch (error) {
                     MySwal.fire(
                         'Error!',
@@ -155,7 +155,7 @@ const PostPage = () => {
                                 </Button>
                                 <Button
                                     variant={post.activable ? 'success' : 'secondary'}
-                                    onClick={() => toggleActivation(post._id, post.activable)}
+                                    onClick={() => toggleActivation(post._id, !post.activable)}
                                 >
                                     {post.activable ? <IoLockOpen /> : <IoLockClosed />}
                                 </Button>
@@ -179,11 +179,9 @@ const PostPage = () => {
                             <p><strong>Giá:</strong> {selectedPost.price} VND</p>
                             <p><strong>Ngày đăng:</strong> {selectedPost.created_AT}</p>
                             <p><strong>Vai trò :</strong> {selectedPost.role}</p>
-                            <p><strong>Nhãn Hiệu:</strong> {selectedPost.brandid}</p>
-                            <p><strong>Phân Loại:</strong> {selectedPost.idCategory}</p>
+                            {/* <p><strong>Nhãn Hiệu:</strong> {selectedPost.brandid}</p>
+                            <p><strong>Phân Loại:</strong> {selectedPost.idCategory}</p> */}
                             <p><strong>Email:</strong> {selectedPost.email}</p>
-                            {/* <p><strong>Status:</strong> {selectedPost.activable ? 'Active' : 'Inactive'}</p>
-                            <p><strong>Description:</strong> {selectedPost.description}</p> */}
                         </div>
                     )}
                 </Modal.Body>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { FaTh, FaUserAlt, FaRegChartBar, FaShoppingBag, FaThList, FaList , FaBars, FaUsers,FaChartBar } from "react-icons/fa";
-import './css/Sidebar.css'
 import { NavLink } from 'react-router-dom';
+import { FaTh, FaUsers, FaList, FaBars, FaSignOutAlt } from "react-icons/fa";
+import './css/Sidebar.css';
+import Swal from 'sweetalert2';
 
-const Sidebar = ({children}) => {
-    const[isOpen, setIsOpen] = useState(false);
+const Sidebar = ({ children }) => {
+    const [isOpen, setIsOpen] = useState(false);
     const toggle = () => setIsOpen(!isOpen);
+
     const menuItem = [
         {
             path: "/",
@@ -20,7 +22,7 @@ const Sidebar = ({children}) => {
         {
             path: "/postpage",
             name: "PostNews",
-            icon: <FaList  />
+            icon: <FaList />
         },
         // {
         //     path: "/chart",
@@ -42,16 +44,30 @@ const Sidebar = ({children}) => {
         //     name: "About",
         //     icon: <FaUserAlt />
         // },
-    ]
+    ];
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        Swal.fire({
+            icon: 'success',
+            title: 'Đăng xuất thành công.',
+            showConfirmButton: false,
+            timer: 1500
+        }).then(() => {
+            window.location.reload();
+        });
+    };
+
     return (
         <div className={`layout ${isOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
-            <div className='sidebar fixed-top' style={{ width: isOpen ? "250px" : "50px" }}>
-                <div className='top_section'>
-                    <h1 style={{ display: isOpen ? "block" : "none" }} className='logo'>Logo</h1>
-                    <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className='bars'>
-                        <FaBars onClick={toggle} />
-                    </div>
+        <div className='sidebar fixed-top' style={{ width: isOpen ? "250px" : "50px" }}>
+            <div className='top_section'>
+                <h1 style={{ display: isOpen ? "block" : "none" }} className='logo'>Logo</h1>
+                <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className='bars'>
+                    <FaBars onClick={toggle} />
                 </div>
+            </div>
+            <div className="menu-items">
                 {menuItem.map((item, index) => (
                     <NavLink to={item.path} key={index} className="link" activeClassName="active">
                         <div className="icon">{item.icon}</div>
@@ -59,10 +75,15 @@ const Sidebar = ({children}) => {
                     </NavLink>
                 ))}
             </div>
-            <div className="main-content">
-                {children}
+            {/* Logout Button */}
+            <div className="logout-section" onClick={handleLogout} style={{ cursor: 'pointer', textAlign: 'center' }}>
+                <div className="icon" style={{ marginBottom: '10px' }}><FaSignOutAlt /></div>
             </div>
         </div>
+        <div className="main-content">
+            {children}
+        </div>
+    </div>
     );
 };
 
