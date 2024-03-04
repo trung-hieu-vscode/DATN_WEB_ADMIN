@@ -53,12 +53,73 @@ const PostPage = () => {
                     } else {
                         toast.error('Có lỗi xảy ra!');
                     }
+                    fetchData();
                 } catch (error) {
                     MySwal.fire(
                         'Error!',
                         `Error ${action}ing bài viết: ${error.message}`,
                         'error'
                     );
+                }
+            }
+        });
+    };
+
+    const hideAllPosts = async () => {
+        MySwal.fire({
+            title: 'Bạn muốn ẩn tất cả bài viết?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Đúng, ẩn tất cả bài viết!',
+            cancelButtonText: 'Hủy',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setLoading(true);
+                const hidePromises = postData.map(post => 
+                    AxiosInstance().post(`/api/postnews/activable/${post._id}`, { activable: false })
+                );
+                try {
+                    const results = await Promise.allSettled(hidePromises);
+                    const hiddenPosts = results.filter(result => result.status === 'fulfilled');
+                    toast.success(`${hiddenPosts.length} posts have been hidden.`);
+                } catch (error) {
+                    console.error('Error hiding posts:', error);
+                    toast.error(`An error occurred while hiding the posts: ${error.message}`);
+                } finally {
+                    fetchData();
+                    setLoading(false);
+                }
+            }
+        });
+    };
+
+    const showAllPosts = async () => {
+        MySwal.fire({
+            title: 'Bạn muốn hiện tất cả bài viết?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Đúng, hiện tất cả bài viết!',
+            cancelButtonText: 'Hủy',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setLoading(true);
+                const showPromises = postData.map(post =>
+                    AxiosInstance().post(`/api/postnews/activable/${post._id}`, { activable: true })
+                );
+                try {
+                    const results = await Promise.allSettled(showPromises);
+                    const shownPosts = results.filter(result => result.status === 'fulfilled');
+                    toast.success(`${shownPosts.length} posts have been shown.`);
+                } catch (error) {
+                    console.error('Error showing posts:', error);
+                    toast.error(`An error occurred while showing the posts: ${error.message}`);
+                } finally {
+                    fetchData();
+                    setLoading(false);
                 }
             }
         });
@@ -129,7 +190,10 @@ const PostPage = () => {
                         <th style={center}>Tiều đề</th>
                         <th style={center}>Hình ảnh</th>
                         <th style={center}>Trạng thái</th>
-                        <th style={cellStyle}></th>
+                        <th style={center}>
+                            <Button variant="danger" onClick={hideAllPosts}>Ẩn tất cả bài viết</Button>
+                            <Button variant="success" onClick={showAllPosts} style={{ marginLeft: '10px' }}>Hiện tất cả bài viết</Button>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -173,15 +237,15 @@ const PostPage = () => {
                     {selectedPost && (
                         <div>
                             <p><strong>Tiêu đề:</strong> {selectedPost.title}</p>
-                            <p><strong>Trạng Thái:</strong> {selectedPost.status}</p>
+                            <p><strong>Trạng Thái:</strong> {selectedPost.activable ? "Bài viết đang hiện" : "Bài viết đang ẩn"}</p>
                             <p><strong>Chi tiết:</strong> {selectedPost.detail}</p>
                             <p><strong>Vị trí:</strong> {selectedPost.location}</p>
                             <p><strong>Giá:</strong> {selectedPost.price} VND</p>
                             <p><strong>Ngày đăng:</strong> {selectedPost.created_AT}</p>
                             <p><strong>Vai trò :</strong> {selectedPost.role}</p>
-                            {/* <p><strong>Nhãn Hiệu:</strong> {selectedPost.brandid}</p>
-                            <p><strong>Phân Loại:</strong> {selectedPost.idCategory}</p> */}
-                            <p><strong>Email:</strong> {selectedPost.email}</p>
+                            {selectedPost.brandid != null ? (<p><strong>Nhãn Hiệu: </strong> {selectedPost.brandid.nameBrand}</p>) : <p><strong>Nhãn Hiệu: </strong>Không có dữ liệu</p>}
+                            {selectedPost.idCategory != null ? (<p><strong>Danh mục: </strong> {selectedPost.idCategory.name}</p>) : <p><strong>Danh mục: </strong>Không có dữ liệu</p>}
+                            {selectedPost.userid != null ? (<p><strong>Email: </strong> {selectedPost.userid.email}</p>) : <p><strong>Email: </strong>Không có dữ liệu</p>}
                         </div>
                     )}
                 </Modal.Body>

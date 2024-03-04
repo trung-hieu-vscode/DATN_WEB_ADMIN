@@ -96,6 +96,39 @@ const User = () => {
         });
     };
 
+    const handleLockUnlockAllUsers = async (lock) => {
+        const action = lock ? 'khóa' : 'mở khóa';
+        const actionPastTense = lock ? 'đã khóa' : 'đã mở khóa';
+        MySwal.fire({
+            title: `Bạn có chắc chắn muốn ${action} tất cả người dùng không?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: `Có, ${action} họ!`,
+            cancelButtonText: 'Hủy',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setLoading(true);
+                const requests = users.map(user =>
+                    AxiosInstance().post(`/api/lock-unlock/user/?userId=${user._id}&lock=${lock ? 'true' : 'false'}`)
+                );
+                try {
+                    await Promise.allSettled(requests);
+                    MySwal.fire('Hoàn tất!', `Tất cả người dùng ${actionPastTense}.`, 'success');
+                } catch (error) {
+                    MySwal.fire(
+                        'Error!',
+                        `Error ${action}ing user: ${error.message}`,
+                        'error'
+                    );
+                } finally {
+                    fetchUsers(); // Cập nhật lại danh sách người dùng để phản ánh thay đổi
+                    setLoading(false);
+                }
+            }
+        });
+    };
 
     const renderUserModal = () => (
         <Modal show={showModal} onHide={handleCloseModal}>
@@ -176,7 +209,14 @@ const User = () => {
                         <th style={cellStyle}>Email</th>
                         <th style={center}>VIP</th>
                         <th style={center}>Trạng thái</th>
-                        <th style={center}></th>
+                        <th style={center}>
+                            <Button variant="danger" onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px' }}>
+                                Khoá tất cả người dùng
+                            </Button>
+                            <Button variant="success" onClick={() => handleLockUnlockAllUsers(false)}>
+                                Mở khóa tất cả người dùng
+                            </Button>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
