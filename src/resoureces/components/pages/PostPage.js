@@ -191,8 +191,8 @@ const PostPage = () => {
                         <th style={center}>Hình ảnh</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
-                            <Button variant="danger" onClick={hideAllPosts}>Ẩn tất cả bài viết</Button>
-                            <Button variant="success" onClick={showAllPosts} style={{ marginLeft: '10px' }}>Hiện tất cả bài viết</Button>
+                            <Button variant="danger" onClick={hideAllPosts}>Ẩn bài viết</Button>
+                            <Button variant="success" onClick={showAllPosts} style={{ marginLeft: '10px' }}>Hiện bài viết</Button>
                         </th>
                     </tr>
                 </thead>

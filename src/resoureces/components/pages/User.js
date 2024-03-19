@@ -148,6 +148,13 @@ const User = () => {
                 )}
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="primary" onClick={() => {
+                    const url = new URL(window.location.origin + `/user-posts/${selectedUser._id}`);
+                    url.searchParams.append("name", selectedUser.name);
+                    window.location.href = url;
+                }}>
+                    Bài viết đã đăng
+                </Button>
                 <Button variant="secondary" onClick={handleCloseModal}>
                     Đóng
                 </Button>
@@ -211,10 +218,10 @@ const User = () => {
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
                             <Button variant="danger" onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px' }}>
-                                Khoá tất cả người dùng
+                                Khoá tất cả
                             </Button>
                             <Button variant="success" onClick={() => handleLockUnlockAllUsers(false)}>
-                                Mở khóa tất cả người dùng
+                                Mở khóa tất cả
                             </Button>
                         </th>
                     </tr>
