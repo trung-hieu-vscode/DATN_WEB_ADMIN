@@ -56,8 +56,7 @@ function App() {
   }
 
   return (
-    <div className="container">
-      <Router>
+      <BrowserRouter>
         <Routes>
           <Route element={<PublicRoute />}>
           <Route path="/register" element={<Register/>} />
@@ -79,9 +78,8 @@ function App() {
             <Route path='/about' element={<WithSidebar><About /></WithSidebar>} />
           </Route>
         </Routes>
-      </Router>
-    </div>
-  );
+      </BrowserRouter>
+        );
 }
 
 export default App;

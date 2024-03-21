@@ -8,11 +8,11 @@ const Login = (props) => {
   const { saveUser } = props;
   const [email, setEmail] = useState('user3@gmail.com');
   const [password, setPassword] = useState('111111');
-  const [loading, setLoading] = useState(false); // State variable for loading state
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     try {
-      setLoading(true); // Set loading state to true when login button is clicked
+      setLoading(true);
       const body = { email, password };
       const result = await AxiosInstance().post('api/login-user', body);
   
