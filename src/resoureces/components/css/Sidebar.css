@@ -2,18 +2,18 @@
     margin: 0;
     padding: 0;
     text-decoration: none;
-    box-sizing: border-box; /* Ensures padding doesn't affect overall width */
+    box-sizing: border-box;
 }
 
-/* .a {
-    display: flex;
-} */
+.link_text {
+    font-weight: bold;
+}
 
 .sidebar {
     background: #f9862e;
     color: #fff;
-    width: 20%; /* Responsive width */
-    max-width: 200px; /* Maximum width */
+    width: 20%;
+    max-width: 200px;
     height: 100%;
 }
 
@@ -24,13 +24,13 @@
 }
 
 .logo {
-    font-size: 1.6rem; /* Using rem for scalability */
+    font-size: 1.6rem;
 }
 
 .bars {
     display: flex;
     font-size: 1.6rem;
-    margin-left: auto; /* Pushes bars to the end */
+    margin-left: auto;
 }
 
 .link {
@@ -51,50 +51,71 @@
     color: #000;
 }
 
-.icon, .link_text {
+.icon,
+.link_text {
     font-size: 1.2rem;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .sidebar {
-        width: 25%; /* Slightly wider sidebar on smaller screens */
+        width: 25%;
     }
 
-    .logo, .icon, .link_text {
-        font-size: 1rem; /* Smaller font size for smaller screens */
+    .logo,
+    .icon,
+    .link_text {
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 480px) {
     .a {
-        flex-direction: column; /* Stack sidebar and main content on very small screens */
+        flex-direction: column;
     }
 
     .sidebar {
-        width: 100%; /* Full width sidebar on very small screens */
+        width: 100%;
         max-width: none;
     }
 
-    .top_section, .link {
-        justify-content: center; /* Center elements in the sidebar */
+    .top_section,
+    .link {
+        justify-content: center;
     }
 
     .bars {
-        margin-left: 0; /* Reset margin for bars */
+        margin-left: 0;
     }
 }
 
 .main-content {
     transition: margin-left 0.5s ease;
     padding: 20px;
-  }
-  
-  .sidebar-expanded .main-content {
-    margin-left: 250px; /* same as the expanded sidebar width */
-  }
-  
-  .sidebar-collapsed .main-content {
-    margin-left: 50px; /* same as the collapsed sidebar width */
-  }
-  
+}
+
+.sidebar-expanded .main-content {
+    margin-left: 250px;
+}
+
+.sidebar-collapsed .main-content {
+    margin-left: 50px;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.logout-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.user-list-container .list-group-item {
+    background-color:rgb(195, 200, 204);
+
+}

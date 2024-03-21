@@ -24,26 +24,6 @@ const Sidebar = ({ children }) => {
             name: "PostNews",
             icon: <FaList />
         },
-        // {
-        //     path: "/chart",
-        //     name: "Chart",
-        //     icon: <FaChartBar />
-        // },
-        // {
-        //     path: "/product",
-        //     name: "Product",
-        //     icon: <FaShoppingBag />
-        // },
-        // {
-        //     path: "/productList",
-        //     name: "Product List",
-        //     icon: <FaThList />
-        // },
-        // {
-        //     path: "/about",
-        //     name: "About",
-        //     icon: <FaUserAlt />
-        // },
     ];
 
     const handleLogout = () => {
@@ -60,30 +40,33 @@ const Sidebar = ({ children }) => {
 
     return (
         <div className={`layout ${isOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
-        <div className='sidebar fixed-top' style={{ width: isOpen ? "250px" : "50px" }}>
-            <div className='top_section'>
-                <h1 style={{ display: isOpen ? "block" : "none" }} className='logo'>Logo</h1>
-                <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className='bars'>
-                    <FaBars onClick={toggle} />
+            <div className='sidebar fixed-top' style={{ width: isOpen ? "250px" : "50px" }}>
+                <div className='top_section'>
+                    <h1 style={{ display: isOpen ? "block" : "none" }} className='logo'>MENU</h1>
+                    <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className='bars'>
+                        <FaBars onClick={toggle} />
+                    </div>
+                </div>
+                <div className="menu-items">
+                    {menuItem.map((item, index) => (
+                        <NavLink to={item.path} key={index} className="link" activeClassName="active">
+                            <div className="icon">{item.icon}</div>
+                            <div style={{ display: isOpen ? "block" : "none" }} className="link_text">{item.name}</div>
+                        </NavLink>
+                    ))}
+                </div>
+                <div className="sidebar-footer">
+                <div style={{height:1, backgroundColor:'white'}} ></div>
+                <div className="logout-section" onClick={handleLogout} style={{ cursor: 'pointer', textAlign: 'center' }}>
+                    <div style={{marginRight:'20px', marginBottom:'3px'}}><FaSignOutAlt /></div>
+                    {isOpen && <div className="link_text">Đăng xuất</div>}
+                </div>
                 </div>
             </div>
-            <div className="menu-items">
-                {menuItem.map((item, index) => (
-                    <NavLink to={item.path} key={index} className="link" activeClassName="active">
-                        <div className="icon">{item.icon}</div>
-                        <div style={{ display: isOpen ? "block" : "none" }} className="link_text">{item.name}</div>
-                    </NavLink>
-                ))}
-            </div>
-            {/* Logout Button */}
-            <div className="logout-section" onClick={handleLogout} style={{ cursor: 'pointer', textAlign: 'center' }}>
-                <div className="icon" style={{ marginBottom: '10px' }}><FaSignOutAlt /></div>
+            <div className="main-content">
+                {children}
             </div>
         </div>
-        <div className="main-content">
-            {children}
-        </div>
-    </div>
     );
 };
 

@@ -63,7 +63,7 @@ const User = () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#f9862e',
             confirmButtonText: `Đúng, ${action} người dùng này!`,
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
@@ -104,7 +104,7 @@ const User = () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#f9862e',
             confirmButtonText: `Có, ${action} họ!`,
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
@@ -217,7 +217,7 @@ const User = () => {
                         <th style={center}>VIP</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
-                            <Button variant="danger" onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px' }}>
+                            <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px',backgroundColor:'#f9862e' }}>
                                 Khoá tất cả
                             </Button>
                             <Button variant="success" onClick={() => handleLockUnlockAllUsers(false)}>

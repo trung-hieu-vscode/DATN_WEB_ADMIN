@@ -41,7 +41,7 @@ const PostPage = () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#f9862e',
             confirmButtonText: `Đúng, ${action} bài viết!`,
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
@@ -71,7 +71,7 @@ const PostPage = () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#f9862e',
             confirmButtonText: 'Đúng, ẩn tất cả bài viết!',
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
@@ -101,7 +101,7 @@ const PostPage = () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#f9862e',
             confirmButtonText: 'Đúng, hiện tất cả bài viết!',
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
@@ -191,7 +191,7 @@ const PostPage = () => {
                         <th style={center}>Hình ảnh</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
-                            <Button variant="danger" onClick={hideAllPosts}>Ẩn bài viết</Button>
+                            <Button style={{backgroundColor:'#f9862e'}} onClick={hideAllPosts}>Ẩn bài viết</Button>
                             <Button variant="success" onClick={showAllPosts} style={{ marginLeft: '10px' }}>Hiện bài viết</Button>
                         </th>
                     </tr>

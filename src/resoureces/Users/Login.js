@@ -82,9 +82,9 @@ const Login = (props) => {
             {loading ? 'Loading...' : 'Login'}
           </button>
 
-          <div className="register-link">
+          {/* <div className="register-link">
             <p style={{ color: "#fff" }}> Don't have an account? <a href="/Register">register</a></p>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>
