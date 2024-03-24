@@ -5,7 +5,7 @@ import { IoClose, IoLockClosed, IoLockOpen, IoCheckmarkCircleSharp, IoCloseCircl
 import { FaCheck } from "react-icons/fa";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { Modal, Button, Spinner, Navbar, FormControl, Form } from 'react-bootstrap';
+import { Modal, Button, Spinner, Navbar, FormControl, Form, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const MySwal = withReactContent(Swal);
@@ -17,6 +17,11 @@ const User = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [lockedUsers, setLockedUsers] = useState({});
     const [loading, setLoading] = useState(false);
+    const [mockTransactions, setMockTransactions] = useState([
+        { title: "Nạp tiền vào tài khoản", date: "2024-03-21", amount: 500000 },
+        { title: "Thanh toán VIP bài viết", date: "2024-03-18", amount: -200000 },
+        { title: "Nạp tiền vào tài khoản", date: "2024-03-15", amount: 300000 },
+    ]);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -50,7 +55,8 @@ const User = () => {
         );
 
     const handleShowModal = (user) => {
-        setSelectedUser(user);
+        // setSelectedUser(user);
+        setSelectedUser({...user, transactions: mockTransactions});
         setShowModal(true);
     };
 
@@ -123,30 +129,67 @@ const User = () => {
                         'error'
                     );
                 } finally {
-                    fetchUsers(); // Cập nhật lại danh sách người dùng để phản ánh thay đổi
+                    fetchUsers();
                     setLoading(false);
                 }
             }
         });
     };
 
+    const renderTransactionItem = (transaction, index) => {
+        const isPositive = transaction.amount > 0;
+        const transactionAmount = isPositive ? `+${transaction.amount.toLocaleString()}` : transaction.amount.toLocaleString();
+        return (
+            <ListGroup.Item 
+                key={index} 
+                style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    backgroundColor: isPositive ? '#d4edda' : '#f8d7da',
+                    color: isPositive ? 'green' : 'red',
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ marginRight: '10px' }}>
+                    </div>
+                    <div>
+                        <div style={{ fontWeight: 'bold' }}>{transaction.title}</div>
+                        <div>{transaction.date}</div>
+                    </div>
+                </div>
+                <div>
+                    {transactionAmount}₫
+                </div>
+            </ListGroup.Item>
+        );
+    };    
+
     const renderUserModal = () => (
         <Modal show={showModal} onHide={handleCloseModal}>
             <Modal.Header closeButton>
                 <Modal.Title>Thông tin chi tiết người dùng</Modal.Title>
             </Modal.Header>
+            
             <Modal.Body>
-                {selectedUser && (
-                    <div>
-                        <p><strong>Tên người dùng:</strong> {selectedUser.name}</p>
+            {selectedUser && (
+                <div>
+                    <p><strong>Tên người dùng:</strong> {selectedUser.name}</p>
                         <p><strong>Email:</strong> {selectedUser.email}</p>
                         <p><strong>VIP:</strong> {selectedUser.vip ? "Đã có VIP" : "Không có VIP"}</p>
                         <p><strong>Số điện thoại:</strong> {selectedUser.phone}</p>
                         {/* <p><strong>Activate:</strong> {selectedUser.isActivate ? " Activated" : "Not Activated"}</p> */}
                         <p><strong>Số tiền:</strong> {selectedUser.balance} vnd</p>
-                    </div>
-                )}
-            </Modal.Body>
+                    <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
+                    <h5>Lịch sử giao dịch: </h5>
+                    <ListGroup>
+                        {selectedUser.transactions && selectedUser.transactions.length > 0
+                            ? selectedUser.transactions.map(renderTransactionItem)
+                            : <p>Không có giao dịch nào.</p>}
+                    </ListGroup>
+                </div>
+            )}
+        </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={() => {
                     const url = new URL(window.location.origin + `/user-posts/${selectedUser._id}`);
@@ -160,6 +203,7 @@ const User = () => {
                 </Button>
             </Modal.Footer>
         </Modal>
+
     );
 
     // Styles
@@ -217,7 +261,7 @@ const User = () => {
                         <th style={center}>VIP</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
-                            <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px',backgroundColor:'#f9862e' }}>
+                            <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px', backgroundColor: '#f9862e' }}>
                                 Khoá tất cả
                             </Button>
                             <Button variant="success" onClick={() => handleLockUnlockAllUsers(false)}>

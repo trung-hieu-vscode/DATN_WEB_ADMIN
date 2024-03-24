@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Modal, Button, Spinner, Navbar, FormControl, Form } from 'react-bootstrap';
+import { Modal, Button, Spinner, Navbar, FormControl, Form, ListGroup } from 'react-bootstrap';
 import '../css/Dashboard.css';
 import AxiosInstance from '../../helper/Axiosintances';
-import { postNewsData } from '../../Service/PostNewServices';
 
-const Dashboard = (props) => {
+const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [adCounts, setAdCounts] = useState(0);
-  const [postCounts, setPostCounts] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  const revenueData = [150000, 300000, 50000];
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        const responseUsers = await AxiosInstance().get('api/users');
-        if (responseUsers && Array.isArray(responseUsers.users)) {
-          const sortedUsers = responseUsers.users.sort((a, b) => new Date(b.balance) - new Date(a.balance));
+        const response = await AxiosInstance().get('/api/users');
+        if (response && Array.isArray(response.users)) {
+          const sortedUsers = response.users.sort((a, b) => b.balance - a.balance);
           setUsers(sortedUsers);
         } else {
-          console.error('Error');
+          console.error('Error fetching users');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -31,49 +30,29 @@ const Dashboard = (props) => {
       }
     };
     fetchData();
-  }, []);
+  }, []);  
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await postNewsData();
-        if (response && Array.isArray(response)) {
-          setPostCounts(response);
-        } else {
-          console.error('Error');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchPost();
-  }, []);
+  const getMonthNames = () => {
+    const date = new Date();
+    const currentMonth = date.getMonth();
+    const formatter = new Intl.DateTimeFormat('en', { month: 'long' });
 
-  useEffect(() => {
-    const fetchAd = async () => {
-      try {
-        const response = await AxiosInstance().get('api/vips');
-        if (response && Array.isArray(response)) {
-          setAdCounts(response);
-        } else {
-          console.error('Error');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchAd();
-  }, []);
+    return [
+      formatter.format(new Date(date.getFullYear(), currentMonth - 2, 1)),
+      formatter.format(new Date(date.getFullYear(), currentMonth - 1, 1)),
+      formatter.format(new Date(date.getFullYear(), currentMonth, 1)),
+    ];
+  };
 
   const lineChartData = {
-    labels: ['Số lượng VIP', 'Số người dùng', 'Số tin đăng'],
+    labels: getMonthNames(),
     datasets: [
       {
-        label: 'Dữ liệu',
-        backgroundColor: 'rgba(75,192,192,1)',
-        borderColor: 'rgba(0,0,0,1)',
-        borderWidth: 1,
-        data: [adCounts.length, users.length, postCounts.length],
+        label: 'Monthly Revenue',
+        backgroundColor: 'rgba(75,192,192,0.2)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderWidth: 2,
+        data: revenueData,
         fill: false,
       }
     ]
@@ -108,28 +87,24 @@ const Dashboard = (props) => {
   return (
     <div className="container-fluid">
       <h1 className="display-4 post-page-title">Bảng điều khiển</h1>
-      <div style={{height:'50px', backgroundColor:'rgb(248, 249, 250)'}}></div>
-      <div style={{ height: 30, color: '#ddd' }}></div>
+      <div style={{ height: '50px', backgroundColor: 'rgb(248, 249, 250)' }}></div>
       <div className="row">
         <div className="col-md-6">
-          <h2 className="text-center">Thống kê</h2>
+          <h2 className="text-center">Doanh thu </h2>
           <div className="chart-container">
-            <Line
-              data={lineChartData}
-              options={lineChartOptions}
-            />
+            <Line data={lineChartData} options={lineChartOptions} />
           </div>
         </div>
         <div className="col-md-6">
           <h2 className="text-center">Xếp hạng người nạp</h2>
           <div className="user-list-container">
-            <ul className="list-group">
-              {filteredUsers.map(user => (
-                <li key={user.id} className="list-group-item">
+            <ListGroup>
+              {filteredUsers.map((user, index) => (
+                <ListGroup.Item key={user._id || index}>
                   <strong>{user.name}</strong> - {user.balance} vnd
-                </li>
+                </ListGroup.Item>
               ))}
-            </ul>
+            </ListGroup>
           </div>
         </div>
       </div>

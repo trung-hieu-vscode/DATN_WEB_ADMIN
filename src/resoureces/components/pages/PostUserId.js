@@ -56,12 +56,13 @@ const PostUserId = () => {
     };
 
     return (
-        <div>
+        <div className="container-fluid">
             {loading ? (
                 <Spinner animation="border" role="status" />
             ) : (
                 <div>
                     <h2>Bài viết của <span style={{ fontWeight: 'bold', color: 'blue' }}>{userName}</span></h2>
+                    <div style={{height:'50px', backgroundColor:'rgb(248, 249, 250)'}}></div>
                     {posts.length > 0 ? (
                         <div className="table-responsive">
                             <table className="table table-hover" style={tableStyle}>
