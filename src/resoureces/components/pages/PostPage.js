@@ -46,11 +46,11 @@ const PostPage = () => {
             if (result.isConfirmed) {
                 try {
                     const response = await AxiosInstance().post(`/api/postnews/activable/${postId}`);
-                    if (response && response.success) {
+                    if (response && response.data.success) {
                         fetchData();
                     } else {
+                        toast.error('Có lỗi xảy ra!');
                     }
-                    fetchData();
                 } catch (error) {
                     MySwal.fire(
                         'Error!',
@@ -148,7 +148,7 @@ const PostPage = () => {
                                 </Button>
                                 <Button
                                     variant={post.activable ? 'success' : 'secondary'}
-                                    onClick={() => toggleActivation(post._id, post.activable)}
+                                    onClick={() => toggleActivation(post._id, !post.activable)}
                                 >
                                     {typeof post.activable === 'boolean' ? (post.activable ? <IoLockOpen /> : <IoLockClosed />) : null}
                                 </Button>
@@ -172,10 +172,15 @@ const PostPage = () => {
                             <p><strong>Giá:</strong> {selectedPost.price} VND</p>
                             <p><strong>Ngày đăng:</strong> {selectedPost.created_AT}</p>
                             <p><strong>Vai trò :</strong> {selectedPost.role}</p>
+
                             {selectedPost.brandid != null ? (<p><strong>Nhãn Hiệu: </strong> {selectedPost.brandid.nameBrand}</p>) : <p><strong>Nhãn Hiệu: </strong>Không có dữ liệu</p>}
                             {selectedPost.idCategory != null ? (<p><strong>Danh mục: </strong> {selectedPost.idCategory.name}</p>) : <p><strong>Danh mục: </strong>Không có dữ liệu</p>}
                             {selectedPost.userid != null ? (<p><strong>Email: </strong> {selectedPost.userid.email}</p>) : <p><strong>Email: </strong>Không có dữ liệu</p>}
 
+
+                            {/* <p><strong>Nhãn Hiệu:</strong> {selectedPost.brandid}</p>
+                            <p><strong>Phân Loại:</strong> {selectedPost.idCategory}</p> */}
+                            <p><strong>Email:</strong> {selectedPost.email}</p>
                         </div>
                     )}
                 </Modal.Body>
