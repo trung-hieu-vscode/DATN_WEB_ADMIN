@@ -130,7 +130,10 @@ const PostPage = () => {
         setShowModal(true);
     };
 
-    const handleCloseModal = () => setShowModal(false);
+    const handleCloseModal = () => {
+        setShowModal(false);
+        window.location.reload()
+    };
 
     const filteredPostData = postData
         .filter(post => post.title.toLowerCase().includes(searchKeyword.toLowerCase()))

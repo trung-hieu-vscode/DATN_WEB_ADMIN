@@ -17,11 +17,6 @@ const User = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [lockedUsers, setLockedUsers] = useState({});
     const [loading, setLoading] = useState(false);
-    const [mockTransactions, setMockTransactions] = useState([
-        { title: "Nạp tiền vào tài khoản", date: "2024-03-21", amount: 500000 },
-        { title: "Thanh toán VIP bài viết", date: "2024-03-18", amount: -200000 },
-        { title: "Nạp tiền vào tài khoản", date: "2024-03-15", amount: 300000 },
-    ]);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -43,9 +38,29 @@ const User = () => {
         setLoading(false);
     };
 
+    const fetchUserTransactions = async (userId) => {
+        try {
+            const response = await AxiosInstance().get(`api/transaction/get_recharge/${userId}`);
+            if (response.data && response.data.length > 0) {
+                setSelectedUser(prevState => ({ ...prevState, transactions: response.data }));
+            } else {
+                console.error('No transactions found');
+            }
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+        }
+    };
+
+
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    const handleShowModal = (user) => {
+        setSelectedUser(user);
+        fetchUserTransactions(user._id);
+        setShowModal(true);
+    };
 
     const filteredUsers = searchTerm.length === 0
         ? users
@@ -54,14 +69,13 @@ const User = () => {
             (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
-    const handleShowModal = (user) => {
-        // setSelectedUser(user);
-        setSelectedUser({...user, transactions: mockTransactions});
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => setShowModal(false);
-
+        const handleCloseModal = () => {
+            setSelectedUser(null);
+            fetchUserTransactions(null);
+            setShowModal(false);
+            window.location.reload()
+        };
+        
     const handleLockUser = async (userId, isActivate) => {
         const action = isActivate ? 'mở khóa' : 'khóa';
         MySwal.fire({
@@ -135,61 +149,62 @@ const User = () => {
             }
         });
     };
-
+    //data lịch sử giao dịch
     const renderTransactionItem = (transaction, index) => {
         const isPositive = transaction.amount > 0;
         const transactionAmount = isPositive ? `+${transaction.amount.toLocaleString()}` : transaction.amount.toLocaleString();
         return (
-            <ListGroup.Item 
-                key={index} 
-                style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
+            <ListGroup.Item
+                key={index}
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                     backgroundColor: isPositive ? '#d4edda' : '#f8d7da',
                     color: isPositive ? 'green' : 'red',
                 }}
             >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ marginRight: '10px' }}>
-                    </div>
-                    <div>
-                        <div style={{ fontWeight: 'bold' }}>{transaction.title}</div>
-                        <div>{transaction.date}</div>
-                    </div>
-                </div>
                 <div>
-                    {transactionAmount}₫
+                    <div>{transaction.description.content}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                        <div style={{ color: transaction.amount > 0 ? 'green' : 'red' }}>
+                            {transactionAmount}₫
+                        </div>
+                        <div style={{ marginLeft: 'auto' }}>
+                            {new Date(transaction.createAt).toLocaleString('vi-VN', { hour12: false, day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                    </div>
                 </div>
             </ListGroup.Item>
         );
-    };    
+    };
+
 
     const renderUserModal = () => (
         <Modal show={showModal} onHide={handleCloseModal}>
             <Modal.Header closeButton>
                 <Modal.Title>Thông tin chi tiết người dùng</Modal.Title>
             </Modal.Header>
-            
+
             <Modal.Body>
-            {selectedUser && (
-                <div>
-                    <p><strong>Tên người dùng:</strong> {selectedUser.name}</p>
+                {selectedUser && (
+                    <div>
+                        <p><strong>Tên người dùng:</strong> {selectedUser.name}</p>
                         <p><strong>Email:</strong> {selectedUser.email}</p>
                         <p><strong>VIP:</strong> {selectedUser.vip ? "Đã có VIP" : "Không có VIP"}</p>
                         <p><strong>Số điện thoại:</strong> {selectedUser.phone}</p>
                         {/* <p><strong>Activate:</strong> {selectedUser.isActivate ? " Activated" : "Not Activated"}</p> */}
                         <p><strong>Số tiền:</strong> {selectedUser.balance} vnd</p>
-                    <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
-                    <h5>Lịch sử giao dịch: </h5>
-                    <ListGroup>
-                        {selectedUser.transactions && selectedUser.transactions.length > 0
-                            ? selectedUser.transactions.map(renderTransactionItem)
-                            : <p>Không có giao dịch nào.</p>}
-                    </ListGroup>
-                </div>
-            )}
-        </Modal.Body>
+                        <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
+                        <h5>Lịch sử giao dịch: </h5>
+                        <ListGroup>
+                            {selectedUser.transactions && selectedUser.transactions.length > 0
+                                ? selectedUser.transactions.map(renderTransactionItem)
+                                : <p>Không có giao dịch nào.</p>}
+                        </ListGroup>
+                    </div>
+                )}
+            </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={() => {
                     const url = new URL(window.location.origin + `/user-posts/${selectedUser._id}`);
@@ -293,7 +308,6 @@ const User = () => {
                                 ) : (
                                     <Button variant="danger" onClick={() => handleLockUser(user._id)}><IoLockClosed /></Button>
                                 )}
-
                             </td>
                         </tr>
                     ))}
