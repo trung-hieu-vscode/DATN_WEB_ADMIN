@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { Modal, Button, Spinner, Navbar, FormControl, Form, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import moment from 'moment';
 
 const MySwal = withReactContent(Swal);
 
@@ -38,30 +39,81 @@ const User = () => {
         setLoading(false);
     };
 
-    const fetchUserTransactions = async (userId) => {
+    const fetchUserData = async (userId) => {
         try {
-            const response = await AxiosInstance().get(`api/transaction/get_recharge/${userId}`);
-            if (response.data && response.data.length > 0) {
-                setSelectedUser(prevState => ({ ...prevState, transactions: response.data }));
-            } else {
-                console.error('No transactions found');
+            const transactionResponse = await AxiosInstance().get(`api/transaction/get_recharge/${userId}`);
+            const vipPostResponse = await AxiosInstance().get(`api/transaction/get_vip_posts/${userId}`);
+
+            let transactions = [];
+            let vipPosts = [];
+
+            if (transactionResponse.data && transactionResponse.data.length > 0) {
+                transactions = transactionResponse.data.map(transaction => ({
+                    ...transaction,
+                    type: 'transaction' // Loại này để phân biệt với bài viết VIP
+                }));
             }
+
+            if (vipPostResponse.data && vipPostResponse.data.length > 0) {
+                vipPosts = vipPostResponse.data.map(post => ({
+                    ...post,
+                    type: 'vipPost' // Loại này để phân biệt với giao dịch
+                }));
+            }
+
+            // Kết hợp dữ liệu từ hai nguồn và sắp xếp chúng theo thời gian
+            const mergedData = [...transactions, ...vipPosts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            setSelectedUser(prevState => ({ ...prevState, userData: mergedData }));
         } catch (error) {
-            console.error('Error fetching transactions:', error);
+            console.error('Error fetching user data:', error);
         }
     };
-
 
     useEffect(() => {
         fetchUsers();
     }, []);
 
-    const handleShowModal = (user) => {
+    const handleShowModal = async (user) => {
         setSelectedUser(user);
-        fetchUserTransactions(user._id);
+        await fetchUserData(user._id);
         setShowModal(true);
     };
 
+    //SL hiển thị
+    const MAX_DISPLAY_TRANSACTIONS = 5;
+    //data lịch sử giao dịch
+    const renderTransactionsList = () => {
+        if (selectedUser && selectedUser.userData && selectedUser.userData.length > 0) {
+            const sortedData = selectedUser.userData.sort((a, b) => new Date(b.createAt) - new Date(a.createAt));
+    
+            return (
+                <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                    {sortedData.map((data, index) => (
+                        <div key={index} style={{ backgroundColor: data.type === 'transaction' ? '#c3e6cb' : '#f5c6cb' }}>
+                            {data.type === 'transaction' ? (
+                                <>
+                                    <p style={{ color: '#28a745' }}><strong>Nạp tiền thành công</strong></p>
+                                    <p><strong>Mô tả:</strong> {data.description.content}</p>
+                                    <p><strong>Thời gian:</strong> {moment(data.createAt).format('DD/MM/YYYY HH:mm')}</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p style={{ color: '#dc3545' }}><strong>Mua VIP thành công</strong></p>
+                                    <p><strong>Nội dung:</strong> {data.description.content}</p>
+                                    <p><strong>Thời gian:</strong> {moment(data.createAt).format('DD/MM/YYYY HH:mm')}</p>
+                                </>
+                            )}
+                            <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
+                        </div>
+                    ))}
+                </div>
+            );
+        } else {
+            return <p>Không có dữ liệu nào được tìm thấy cho người dùng này.</p>;
+        }
+    };
+    
     const filteredUsers = searchTerm.length === 0
         ? users
         : users.filter(user =>
@@ -69,13 +121,12 @@ const User = () => {
             (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
-        const handleCloseModal = () => {
-            setSelectedUser(null);
-            fetchUserTransactions(null);
-            setShowModal(false);
-            window.location.reload()
-        };
-        
+    const handleCloseModal = () => {
+        setSelectedUser(null);
+        setShowModal(false);
+        window.location.reload()
+    };
+
     const handleLockUser = async (userId, isActivate) => {
         const action = isActivate ? 'mở khóa' : 'khóa';
         MySwal.fire({
@@ -149,36 +200,6 @@ const User = () => {
             }
         });
     };
-    //data lịch sử giao dịch
-    const renderTransactionItem = (transaction, index) => {
-        const isPositive = transaction.amount > 0;
-        const transactionAmount = isPositive ? `+${transaction.amount.toLocaleString()}` : transaction.amount.toLocaleString();
-        return (
-            <ListGroup.Item
-                key={index}
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    backgroundColor: isPositive ? '#d4edda' : '#f8d7da',
-                    color: isPositive ? 'green' : 'red',
-                }}
-            >
-                <div>
-                    <div>{transaction.description.content}</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                        <div style={{ color: transaction.amount > 0 ? 'green' : 'red' }}>
-                            {transactionAmount}₫
-                        </div>
-                        <div style={{ marginLeft: 'auto' }}>
-                            {new Date(transaction.createAt).toLocaleString('vi-VN', { hour12: false, day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                    </div>
-                </div>
-            </ListGroup.Item>
-        );
-    };
-
 
     const renderUserModal = () => (
         <Modal show={showModal} onHide={handleCloseModal}>
@@ -197,11 +218,7 @@ const User = () => {
                         <p><strong>Số tiền:</strong> {selectedUser.balance} vnd</p>
                         <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
                         <h5>Lịch sử giao dịch: </h5>
-                        <ListGroup>
-                            {selectedUser.transactions && selectedUser.transactions.length > 0
-                                ? selectedUser.transactions.map(renderTransactionItem)
-                                : <p>Không có giao dịch nào.</p>}
-                        </ListGroup>
+                        {renderTransactionsList()}
                     </div>
                 )}
             </Modal.Body>
