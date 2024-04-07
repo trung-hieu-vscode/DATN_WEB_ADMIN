@@ -86,20 +86,23 @@ const User = () => {
     const renderTransactionsList = () => {
         if (selectedUser && selectedUser.userData && selectedUser.userData.length > 0) {
             const sortedData = selectedUser.userData.sort((a, b) => new Date(b.createAt) - new Date(a.createAt));
-    
+
             return (
-                <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {sortedData.map((data, index) => (
-                        <div key={index} style={{ backgroundColor: data.type === 'transaction' ? '#c3e6cb' : '#f5c6cb' }}>
+                        <div key={index} style={{ backgroundColor: data.paid ? '#c3e6cb' : '#f5c6cb' }}>
                             {data.type === 'transaction' ? (
                                 <>
-                                    <p style={{ color: '#28a745' }}><strong>Nạp tiền thành công</strong></p>
-                                    <p><strong>Mô tả:</strong> {data.description.content}</p>
+                                    <p style={{ color: data.paid ? '#28a745' : '#dc3545' }}>
+                                        <strong>{data.paid ? 'Nạp tiền thành công' : 'Nạp tiền thất bại'}</strong>
+                                    </p>                                    <p><strong>Nội dung:</strong> {data.description.content}</p>
                                     <p><strong>Thời gian:</strong> {moment(data.createAt).format('DD/MM/YYYY HH:mm')}</p>
                                 </>
                             ) : (
                                 <>
-                                    <p style={{ color: '#dc3545' }}><strong>Mua VIP thành công</strong></p>
+                                    <p style={{ color: data.paid ? '#28a745' : '#dc3545' }}>
+                                        <strong>{data.paid ? 'Mua VIP thành công' : 'Mua VIP thất bại'}</strong>
+                                    </p>
                                     <p><strong>Nội dung:</strong> {data.description.content}</p>
                                     <p><strong>Thời gian:</strong> {moment(data.createAt).format('DD/MM/YYYY HH:mm')}</p>
                                 </>
@@ -113,7 +116,7 @@ const User = () => {
             return <p>Không có dữ liệu nào được tìm thấy cho người dùng này.</p>;
         }
     };
-    
+
     const filteredUsers = searchTerm.length === 0
         ? users
         : users.filter(user =>

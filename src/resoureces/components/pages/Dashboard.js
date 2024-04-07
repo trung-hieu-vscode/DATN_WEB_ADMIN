@@ -9,9 +9,28 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [revenueData, setRevenueData] = useState([]);
 
-  const revenueData = [150000, 300000, 50000];
-
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await AxiosInstance().get('/api/transaction/get_all_buy_vip');
+        if (response && response.data && Array.isArray(response.data)) {
+          const data = response.data.map(item => item.amount);
+          setRevenueData(data);
+        } else {
+          console.error('Error fetching revenue data');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+  
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
