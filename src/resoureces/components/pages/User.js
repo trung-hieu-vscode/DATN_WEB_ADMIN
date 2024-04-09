@@ -71,8 +71,10 @@ const User = () => {
     };
 
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        if (users.length == 0) {
+            fetchUsers();
+        }
+    }, [users]);
 
     const handleShowModal = async (user) => {
         setSelectedUser(user);
@@ -124,11 +126,7 @@ const User = () => {
             (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
-    const handleCloseModal = () => {
-        setSelectedUser(null);
-        setShowModal(false);
-        window.location.reload()
-    };
+    const handleCloseModal = () => setShowModal(false);
 
     const handleLockUser = async (userId, isActivate) => {
         const action = isActivate ? 'mở khóa' : 'khóa';
@@ -205,40 +203,43 @@ const User = () => {
     };
 
     const renderUserModal = () => (
-        <Modal show={showModal} onHide={handleCloseModal}>
-            <Modal.Header closeButton>
-                <Modal.Title>Thông tin chi tiết người dùng</Modal.Title>
-            </Modal.Header>
+        showModal
+            ?
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Thông tin chi tiết người dùng</Modal.Title>
+                </Modal.Header>
 
-            <Modal.Body>
-                {selectedUser && (
-                    <div>
-                        <p><strong>Tên người dùng:</strong> {selectedUser.name}</p>
-                        <p><strong>Email:</strong> {selectedUser.email}</p>
-                        <p><strong>VIP:</strong> {selectedUser.vip ? "Đã có VIP" : "Không có VIP"}</p>
-                        <p><strong>Số điện thoại:</strong> {selectedUser.phone}</p>
-                        {/* <p><strong>Activate:</strong> {selectedUser.isActivate ? " Activated" : "Not Activated"}</p> */}
-                        <p><strong>Số tiền:</strong> {selectedUser.balance} vnd</p>
-                        <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
-                        <h5>Lịch sử giao dịch: </h5>
-                        {renderTransactionsList()}
-                    </div>
-                )}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="primary" onClick={() => {
-                    const url = new URL(window.location.origin + `/user-posts/${selectedUser._id}`);
-                    url.searchParams.append("name", selectedUser.name);
-                    window.location.href = url;
-                }}>
-                    Bài viết đã đăng
-                </Button>
-                <Button variant="secondary" onClick={handleCloseModal}>
-                    Đóng
-                </Button>
-            </Modal.Footer>
-        </Modal>
-
+                <Modal.Body>
+                    {selectedUser && (
+                        <div>
+                            <p><strong>Tên người dùng:</strong> {selectedUser.name}</p>
+                            <p><strong>Email:</strong> {selectedUser.email}</p>
+                            <p><strong>VIP:</strong> {selectedUser.vip ? "Đã có VIP" : "Không có VIP"}</p>
+                            <p><strong>Số điện thoại:</strong> {selectedUser.phone}</p>
+                            {/* <p><strong>Activate:</strong> {selectedUser.isActivate ? " Activated" : "Not Activated"}</p> */}
+                            <p><strong>Số tiền:</strong> {selectedUser.balance} vnd</p>
+                            <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
+                            <h5>Lịch sử giao dịch: </h5>
+                            {renderTransactionsList()}
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => {
+                        const url = new URL(window.location.origin + `/user-posts/${selectedUser._id}`);
+                        url.searchParams.append("name", selectedUser.name);
+                        window.location.href = url;
+                    }}>
+                        Bài viết đã đăng
+                    </Button>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Đóng
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            :
+            <></>
     );
 
     // Styles

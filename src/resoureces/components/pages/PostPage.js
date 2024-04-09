@@ -18,8 +18,10 @@ const PostPage = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if(postData.length == 0) {
+            fetchData();
+        }
+    }, [postData]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -132,7 +134,33 @@ const PostPage = () => {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        window.location.reload()
+    };
+
+    const renderPostModal = () => {
+        return showModal && selectedPost && (
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Chi tiết bài viết</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p><strong>Tiêu đề:</strong> {selectedPost.title}</p>
+                    <p><strong>Trạng thái:</strong> {selectedPost.activable ? "Visible" : "Hidden"}</p>
+                    <p><strong>Chi tiết:</strong> {selectedPost.detail}</p>
+                    <p><strong>Vị trí:</strong> {selectedPost.location}</p>
+                    <p><strong>Giá:</strong> {selectedPost.price} VND</p>
+                    <p><strong>Ngày đăng:</strong> {selectedPost.created_AT}</p>
+                    <p><strong>Vai trò:</strong> {selectedPost.role}</p>
+                    {selectedPost.brandid && (<p><strong>Nhãn hiệu:</strong> {selectedPost.brandid.nameBrand}</p>)}
+                    {selectedPost.idCategory && (<p><strong>Danh mục:</strong> {selectedPost.idCategory.name}</p>)}
+                    {selectedPost.userid && (<p><strong>Email:</strong> {selectedPost.userid.email}</p>)}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Đóng
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        );
     };
 
     const filteredPostData = postData
@@ -218,7 +246,7 @@ const PostPage = () => {
                             </td>
                             <td style={center}>
                                 <Button variant="info" onClick={() => handleShowModal(post)}>
-                                    Details
+                                    Chi tiết bài viết
                                 </Button>
                                 <Button
                                     variant={post.activable ? 'success' : 'secondary'}
@@ -231,33 +259,7 @@ const PostPage = () => {
                     ))}
                 </tbody>
             </table>
-
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Post Details</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {selectedPost && (
-                        <div>
-                            <p><strong>Tiêu đề:</strong> {selectedPost.title}</p>
-                            <p><strong>Trạng Thái:</strong> {selectedPost.activable ? "Bài viết đang hiện" : "Bài viết đang ẩn"}</p>
-                            <p><strong>Chi tiết:</strong> {selectedPost.detail}</p>
-                            <p><strong>Vị trí:</strong> {selectedPost.location}</p>
-                            <p><strong>Giá:</strong> {selectedPost.price} VND</p>
-                            <p><strong>Ngày đăng:</strong> {selectedPost.created_AT}</p>
-                            <p><strong>Vai trò :</strong> {selectedPost.role}</p>
-                            {selectedPost.brandid != null ? (<p><strong>Nhãn Hiệu: </strong> {selectedPost.brandid.nameBrand}</p>) : <p><strong>Nhãn Hiệu: </strong>Không có dữ liệu</p>}
-                            {selectedPost.idCategory != null ? (<p><strong>Danh mục: </strong> {selectedPost.idCategory.name}</p>) : <p><strong>Danh mục: </strong>Không có dữ liệu</p>}
-                            {selectedPost.userid != null ? (<p><strong>Email: </strong> {selectedPost.userid.email}</p>) : <p><strong>Email: </strong>Không có dữ liệu</p>}
-                        </div>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            {renderPostModal()}
         </div>
     );
 };
