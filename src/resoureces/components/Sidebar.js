@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { FaTh, FaUsers, FaList, FaBars, FaSignOutAlt } from "react-icons/fa";
 import './css/Sidebar.css';
 import Swal from 'sweetalert2';
+import logo from '../../Assets/Logoapp.png';
 
 const Sidebar = ({ children }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +43,12 @@ const Sidebar = ({ children }) => {
         <div className={`layout ${isOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
             <div className='sidebar fixed-top' style={{ width: isOpen ? "250px" : "50px" }}>
                 <div className='top_section'>
-                    <h1 style={{ display: isOpen ? "block" : "none" }} className='logo'>MENU</h1>
+                    <img
+                        src={logo}
+                        style={{ display: isOpen ? "block" : "none", height:100, width:100 }}
+                        className='logo'
+                        alt="Logo"
+                    />
                     <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className='bars'>
                         <FaBars onClick={toggle} />
                     </div>
@@ -56,11 +62,11 @@ const Sidebar = ({ children }) => {
                     ))}
                 </div>
                 <div className="sidebar-footer">
-                <div style={{height:1, backgroundColor:'white'}} ></div>
-                <div className="logout-section" onClick={handleLogout} style={{ cursor: 'pointer', textAlign: 'center' }}>
-                    <div style={{marginRight:'20px', marginBottom:'3px'}}><FaSignOutAlt /></div>
-                    {isOpen && <div className="link_text">Đăng xuất</div>}
-                </div>
+                    <div style={{ height: 1, backgroundColor: 'white' }} ></div>
+                    <div className="logout-section" onClick={handleLogout} style={{ cursor: 'pointer', textAlign: 'center' }}>
+                        <div style={{ marginRight: '20px', marginBottom: '3px' }}><FaSignOutAlt /></div>
+                        {isOpen && <div className="link_text">Đăng xuất</div>}
+                    </div>
                 </div>
             </div>
             <div className="main-content">
