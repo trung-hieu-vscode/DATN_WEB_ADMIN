@@ -7,6 +7,7 @@
 /* Thiết lập hiển thị danh sách người dùng */
 .user-list-container {
     margin-top: 20px;
+    background-color: aliceblue;
 }
 
 /* Tùy chỉnh chiều rộng của danh sách người dùng */

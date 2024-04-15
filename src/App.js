@@ -6,13 +6,13 @@ import Login from './resoureces/Users/Login';
 import Sidebar from './resoureces/components/Sidebar';
 import Dashboard from './resoureces/components/pages/Dashboard';
 import Analytics from './resoureces/components/pages/Analytics';
-import Product from './resoureces/components/pages/Product';
 import ProductList from './resoureces/components/pages/ProductList';
 import About from './resoureces/components/pages/About';
 import User from './resoureces/components/pages/User';
 import Register from './resoureces/Users/Register';
 import Chart from './resoureces/components/pages/Chart';
 import PostPage from './resoureces/components/pages/PostPage';
+import PostUserId from './resoureces/components/pages/PostUserId';
 
 
 function App() {
@@ -56,8 +56,7 @@ function App() {
   }
 
   return (
-    <div className="container">
-      <Router>
+      <BrowserRouter>
         <Routes>
           <Route element={<PublicRoute />}>
           <Route path="/register" element={<Register/>} />
@@ -73,14 +72,14 @@ function App() {
             <Route path='/analytics' element={<WithSidebar><Analytics /></WithSidebar>} />
             <Route path='/postpage' element={<WithSidebar><PostPage /></WithSidebar>} />
             <Route path='/chart' element={<WithSidebar><Chart/></WithSidebar>} />
-            <Route path='/product' element={<WithSidebar><Product /></WithSidebar>} />
             <Route path='/productList' element={<WithSidebar><ProductList /></WithSidebar>} />
+            {/* <Route path='/postuserid' element={<WithSidebar><PostUserId /></WithSidebar>} /> */}
+            <Route path='/user-posts/:idUser' element={<WithSidebar><PostUserId /></WithSidebar>} />
             <Route path='/about' element={<WithSidebar><About /></WithSidebar>} />
           </Route>
         </Routes>
-      </Router>
-    </div>
-  );
+      </BrowserRouter>
+        );
 }
 
 export default App;
