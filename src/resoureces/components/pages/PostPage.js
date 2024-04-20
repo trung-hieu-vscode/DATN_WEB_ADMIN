@@ -18,7 +18,7 @@ const PostPage = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if(postData.length == 0) {
+        if (postData.length == 0) {
             fetchData();
         }
     }, [postData]);
@@ -79,7 +79,7 @@ const PostPage = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 setLoading(true);
-                const hidePromises = postData.map(post => 
+                const hidePromises = postData.map(post =>
                     AxiosInstance().post(`/api/postnews/activable/${post._id}`, { activable: false })
                 );
                 try {
@@ -125,6 +125,13 @@ const PostPage = () => {
                 }
             }
         });
+    };
+
+    const formatDate = (datetime) => {
+        const date = new Date(datetime);
+        const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const day = date.toLocaleDateString('en-GB');
+        return { time, day };
     };
 
     const handleShowModal = (post) => {
@@ -220,9 +227,10 @@ const PostPage = () => {
                         <th style={center}>STT</th>
                         <th style={center}>Tiều đề</th>
                         <th style={center}>Hình ảnh</th>
+                        <th style={center}>Ngày tạo</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
-                            <Button style={{backgroundColor:'#f9862e'}} onClick={hideAllPosts}>Ẩn bài viết</Button>
+                            <Button style={{ backgroundColor: '#f9862e' }} onClick={hideAllPosts}>Ẩn bài viết</Button>
                             <Button variant="success" onClick={showAllPosts} style={{ marginLeft: '10px' }}>Hiện bài viết</Button>
                         </th>
                     </tr>
@@ -236,6 +244,9 @@ const PostPage = () => {
                                 {post.files && post.files.length > 0 && (
                                     <img src={`https://datnapi.vercel.app/${post.files[0]}`} alt="post" style={{ width: '100px', height: 'auto' }} />
                                 )}
+                            </td>
+                            <td style={center}>
+                                <div>{formatDate(post.created_AT).time}<br />{formatDate(post.created_AT).day}</div>
                             </td>
                             <td style={{
                                 ...center,
