@@ -8,6 +8,8 @@ import '../css/userList.css';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
+// image 
+import logoImg from "../../../Assets/Logoapp.png";
 const MySwal = withReactContent(Swal);
 
 const PostPage = () => {
@@ -185,23 +187,58 @@ const PostPage = () => {
     }
 
     // Styles
+    const borderLeftRight = {
+        border: "none",
+        borderBottom: "inherit"
+    }
+
     const tableStyle = {
         width: '100%',
         borderCollapse: 'collapse',
     };
     const cellStyle = {
-        border: '1px solid #ddd',
+        ...borderLeftRight,
         padding: '8px',
         textAlign: 'left',
     };
     const center = {
-        border: '1px solid #ddd',
+        ...borderLeftRight,
+        // border: '1px solid #ddd',
         padding: '8px',
         textAlign: 'center',
     };
+    const cellFull = {
+        ...borderLeftRight,
+        padding: 0,
+        width: "max-content",
+
+        padding: "5px"
+    }
+    const cellStatus = {
+        padding: "4px 8px",
+        margin: 0,
+
+        // success
+        color: "rgb(50, 128, 72)",
+        background: "rgb(234, 251, 231)",
+        // fail
+        colorRed: "rgb(183, 43, 26)",
+        borderRed: "1px solid rgb(245, 192, 184)",
+        backgroundRed: "rgb(252, 236, 234)",
+
+        border: "1px solid rgb(198, 240, 194)",
+        borderRadius: "4px",
+
+        textAlign: "center",
+        fontSize: "12px",
+        fontWeight: "bold",
+
+    }
     const lockedStyle = {
         backgroundColor: '#f8d7da',
     };
+
+   
 
     return (
         <div className="container-fluid">
@@ -225,8 +262,8 @@ const PostPage = () => {
                 <thead>
                     <tr>
                         <th style={center}>STT</th>
-                        <th style={center}>Tiều đề</th>
                         <th style={center}>Hình ảnh</th>
+                        <th style={center}>Tiều đề</th>
                         <th style={center}>Ngày tạo</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
@@ -239,21 +276,22 @@ const PostPage = () => {
                     {filteredPostData.map((post, index) => (
                         <tr key={post._id}>
                             <td style={cellStyle}>{index + 1}</td>
-                            <td style={cellStyle}>{post.title}</td>
-                            <td style={center}>
+                            <td style={cellFull}>
                                 {post.files && post.files.length > 0 && (
-                                    <img src={`https://datnapi.vercel.app/${post.files[0]}`} alt="post" style={{ width: '100px', height: 'auto' }} />
+                                    <ImageWithFallback src={`https://datnapi.vercel.app/${post.files[0]}`} fallbackSrc={logoImg}  alt="post"  />
                                 )}
                             </td>
+                            <td style={cellStyle}>{post.title}</td>
                             <td style={center}>
                                 <div>{formatDate(post.created_AT).time}<br />{formatDate(post.created_AT).day}</div>
                             </td>
-                            <td style={{
-                                ...center,
-                                backgroundColor: post.activable ? '#c3e6cb' : '#f5c6cb',
-                                color: post.activable ? 'green' : 'red',
-                            }}>
-                                {post.activable ? 'Hiện bài viết' : 'Ản bài viết'}
+                            <td style={borderLeftRight}>
+                                <p style={{
+                                    ...cellStatus,
+                                    color: post.activable ? cellStatus.color : cellStatus.colorRed,
+                                    border: post.activable ? cellStatus.border : cellStatus.borderRed,
+                                    background: post.activable ? cellStatus.background : cellStatus.backgroundRed
+                                }}>{post.activable ? 'Đã duyệt' : 'Chưa duyệt'}</p>
                             </td>
                             <td style={center}>
                                 <Button variant="info" onClick={() => handleShowModal(post)}>
@@ -275,4 +313,17 @@ const PostPage = () => {
     );
 };
 
+
+// util hook 
+// Img tag with fallback 
+function ImageWithFallback({ src, fallbackSrc, alt }) {
+    const handleError = (e) => {
+      // Set the fallback source if there's an error loading the original src
+      e.target.src = fallbackSrc;
+    };
+  
+    return (
+      <img src={src} alt={alt} onError={handleError} style={{ width: '80px', height: '80px', objectFit: "cover", objectPosition:"center", borderRadius: "50px" }}/>
+    );
+  }
 export default PostPage;
