@@ -40,6 +40,13 @@ const PostUserId = () => {
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
 
+    const formatDate = (datetime) => {
+        const date = new Date(datetime);
+        // const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const day = date.toLocaleDateString('en-GB');
+        return `${day}`;
+    };    
+
     const tableStyle = {
         width: '100%',
         borderCollapse: 'collapse',
@@ -70,6 +77,7 @@ const PostUserId = () => {
                                     <tr>
                                         <th style={center}>Tên sản phẩm</th>
                                         <th style={center}>Chi tiết</th>
+                                        <th style={center}>Ngày tạo</th>
                                         <th style={center}>Địa điểm</th>
                                         <th style={center}>Giá</th>
                                     </tr>
@@ -79,6 +87,7 @@ const PostUserId = () => {
                                         <tr key={post._id}>
                                             <td style={cellStyle}>{post.title}</td>
                                             <td style={cellStyle}>{post.detail}</td>
+                                            <td style={cellStyle}>{formatDate(post.created_AT)}</td>
                                             <td style={cellStyle}>{post.location}</td>
                                             <td style={cellStyle}>{formatPrice(post.price)}VNĐ</td>
                                         </tr>

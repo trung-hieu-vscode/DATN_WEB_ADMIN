@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Button, Spinner, ListGroup, Dropdown } from 'react-bootstrap';
 import '../css/Dashboard.css';
 import AxiosInstance from '../../helper/Axiosintances';
+
+// Register the required components for Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
@@ -16,16 +28,16 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await AxiosInstance().get('/api/transaction/get_all_buy_vip');
-      if (response && response.data && Array.isArray(response.data)) {
+      if (response.data && Array.isArray(response.data)) {
         const data = response.data.map(item => item.amount);
         setRevenueData(data);
       } else {
         console.error('Error fetching revenue data');
       }
 
-      const usersResponse = await AxiosInstance().get('/api/users');
-      if (usersResponse && usersResponse.users && Array.isArray(usersResponse.users)) {
-        const sortedUsers = usersResponse.users.sort((a, b) => b.balance - a.balance);
+      const responseUser = await AxiosInstance().get('/api/users');
+      if (responseUser && Array.isArray(responseUser.users)) {
+        const sortedUsers = responseUser.users.sort((a, b) => b.balance - a.balance);
         setUsers(sortedUsers);
       } else {
         console.error('Error fetching users');
@@ -46,7 +58,7 @@ const Dashboard = () => {
     const currentMonth = date.getMonth();
     let dates = [];
     const formatter = new Intl.DateTimeFormat('vi', { month: 'long' });
-  
+
     switch (period) {
       case '3months':
         dates = [
@@ -73,7 +85,11 @@ const Dashboard = () => {
         break;
     }
     return dates;
-  };  
+  };
+
+  function formatBalance(balance) {
+    return new Intl.NumberFormat('de-DE').format(balance);
+  }
 
   const handleSelectTimePeriod = (period, label) => {
     setTimePeriod(period);
@@ -95,12 +111,14 @@ const Dashboard = () => {
   };
 
   const lineChartOptions = {
+    responsive: true,
     scales: {
-      yAxes: [{
-        ticks: {
-          beginAtZero: true
-        }
-      }]
+      x: {
+        type: 'category'
+      },
+      y: {
+        beginAtZero: true
+      }
     }
   };
 
@@ -115,27 +133,27 @@ const Dashboard = () => {
     return (
       <div className="text-center mt-5">
         <Spinner animation="border" role="status" />
-        <p className="mt-3">Loading dashboard...</p>
+        <p className="mt-3">Đang tải vui lòng đợi...</p>
       </div>
     );
   }
 
   return (
     <div className="container-fluid">
-      <h1 className="display-4 post-page-title">Dashboard</h1>
-      <div style={{ height: '50px', backgroundColor: 'rgb(248, 249, 250)'}}></div>
+      <h1 className="display-4 post-page-title">Bảng điều khiển</h1>
+      <div style={{ height: '50px', backgroundColor: 'rgb(248, 249, 250)' }}></div>
       <div className="row">
         <div className="col-md-6">
-          <h2 className="text-center">Thống kê</h2>
+          <h2 className="text-center">Thống kê doanh thu</h2>
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-time-period">
               {selectedTimePeriod}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleSelectTimePeriod('3months', '3 tháng')}>3 Tháng</Dropdown.Item>
-              <Dropdown.Item onClick={() => handleSelectTimePeriod('1month', '1 tháng')}>1 Tháng</Dropdown.Item>
-              <Dropdown.Item onClick={() => handleSelectTimePeriod('1week', '1 tuần')}>1 Tuần</Dropdown.Item>
-              <Dropdown.Item onClick={() => handleSelectTimePeriod('3weeks', '3 tuần')}>3 Tuần</Dropdown.Item>
+              <Dropdown.Item style={{fontSize:16}} onClick={() => handleSelectTimePeriod('3months', '3 tháng')}>3 tháng</Dropdown.Item>
+              <Dropdown.Item style={{fontSize:16}} onClick={() => handleSelectTimePeriod('1month', '1 tháng')}>1 tháng</Dropdown.Item>
+              <Dropdown.Item style={{fontSize:16}} onClick={() => handleSelectTimePeriod('1week', '1 tuần')}>1 tuần</Dropdown.Item>
+              <Dropdown.Item style={{fontSize:16}} onClick={() => handleSelectTimePeriod('3weeks', '3 tuần')}>3 tuần</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
           <div className="chart-container">
@@ -144,11 +162,11 @@ const Dashboard = () => {
         </div>
         <div className="col-md-6">
           <h2 className="text-center">Xếp hạng nạp tiền</h2>
-          <div className="user-list-container">
+          <div className="user-list-container" style={{ maxHeight: '500px', overflowY: 'auto' }}>
             <ListGroup>
               {filteredUsers.map((user, index) => (
                 <ListGroup.Item key={user._id || index}>
-                  <strong>{user.name}</strong> - {user.balance} vnd
+                  <strong>{user.name}</strong> - {formatBalance(user.balance)} vnd
                 </ListGroup.Item>
               ))}
             </ListGroup>

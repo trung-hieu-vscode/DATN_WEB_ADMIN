@@ -50,18 +50,17 @@ const User = () => {
             if (transactionResponse.data && transactionResponse.data.length > 0) {
                 transactions = transactionResponse.data.map(transaction => ({
                     ...transaction,
-                    type: 'transaction' // Loại này để phân biệt với bài viết VIP
+                    type: 'transaction'
                 }));
             }
 
             if (vipPostResponse.data && vipPostResponse.data.length > 0) {
                 vipPosts = vipPostResponse.data.map(post => ({
                     ...post,
-                    type: 'vipPost' // Loại này để phân biệt với giao dịch
+                    type: 'vipPost'
                 }));
             }
 
-            // Kết hợp dữ liệu từ hai nguồn và sắp xếp chúng theo thời gian
             const mergedData = [...transactions, ...vipPosts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
             setSelectedUser(prevState => ({ ...prevState, userData: mergedData }));
@@ -92,12 +91,13 @@ const User = () => {
             return (
                 <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {sortedData.map((data, index) => (
-                        <div key={index} style={{ backgroundColor: data.paid ? '#c3e6cb' : '#f5c6cb' }}>
+                        <div key={index} style={{border: '2px dashed', borderRadius: 10, borderColor: data.paid ? '#c3e6cb' : '#f5c6cb', margin: '8px 4px', padding: 8}}>
                             {data.type === 'transaction' ? (
                                 <>
                                     <p style={{ color: data.paid ? '#28a745' : '#dc3545' }}>
                                         <strong>{data.paid ? 'Nạp tiền thành công' : 'Nạp tiền thất bại'}</strong>
-                                    </p>                                    <p><strong>Nội dung:</strong> {data.description.content}</p>
+                                    </p>                                    
+                                    <p><strong>Nội dung:</strong> {data.description.content}</p>
                                     <p><strong>Thời gian:</strong> {moment(data.createAt).format('DD/MM/YYYY HH:mm')}</p>
                                 </>
                             ) : (
@@ -109,7 +109,7 @@ const User = () => {
                                     <p><strong>Thời gian:</strong> {moment(data.createAt).format('DD/MM/YYYY HH:mm')}</p>
                                 </>
                             )}
-                            <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div>
+                            {/* <div style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}></div> */}
                         </div>
                     ))}
                 </div>
@@ -243,23 +243,55 @@ const User = () => {
     );
 
     // Styles
+    const borderLeftRight = {
+        border: "none",
+        borderBottom: "1px solid",
+    }
     const tableStyle = {
         width: '100%',
         borderCollapse: 'collapse',
     };
     const cellStyle = {
-        border: '1px solid #ddd',
+        ...borderLeftRight,
         padding: '8px',
         textAlign: 'left',
     };
     const center = {
-        border: '1px solid #ddd',
+        ...borderLeftRight,
+        // border: '1px solid #ddd',
         padding: '8px',
         textAlign: 'center',
     };
     const lockedStyle = {
         backgroundColor: '#f8d7da',
     };
+    const cellFull = {
+        ...borderLeftRight,
+        padding: 0,
+        width: "max-content",
+
+        padding: "5px"
+    }
+    const cellStatus = {
+        padding: "4px 8px",
+        margin: 0,
+
+        // success
+        color: "rgb(50, 128, 72)",
+        background: "rgb(234, 251, 231)",
+        // fail
+        colorRed: "rgb(183, 43, 26)",
+        borderRed: "1px solid rgb(245, 192, 184)",
+        backgroundRed: "rgb(252, 236, 234)",
+
+        border: "1px solid rgb(198, 240, 194)",
+        borderRadius: "4px",
+
+        textAlign: "center",
+        fontSize: "12px",
+        fontWeight: "bold",
+
+    }
 
     if (loading) {
         return (
@@ -294,13 +326,12 @@ const User = () => {
                         <th style={cellStyle}>STT</th>
                         <th style={cellStyle}>Tên người dùng</th>
                         <th style={cellStyle}>Email</th>
-                        <th style={center}>VIP</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
-                            <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px', backgroundColor: '#f9862e' }}>
+                            <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px', backgroundColor: '#f9862e', fontSize:12 }}>
                                 Khoá tất cả
                             </Button>
-                            <Button variant="success" onClick={() => handleLockUnlockAllUsers(false)}>
+                            <Button style={{fontSize:12}} variant="success" onClick={() => handleLockUnlockAllUsers(false)}>
                                 Mở khóa tất cả
                             </Button>
                         </th>
@@ -312,17 +343,16 @@ const User = () => {
                             <td style={cellStyle}>{index + 1}</td>
                             <td style={cellStyle}>{user.name}</td>
                             <td style={cellStyle}>{user.email}</td>
-                            <td style={center}>{user.vip ? <FaCheck /> : <IoClose />}</td>
-                            <td style={{
-                                ...center,
-                                backgroundColor: user.isActivate ? '#c3e6cb' : '#f5c6cb',
-                                color: user.isActivate ? 'green' : 'red',
-                            }}>
-                                {user.isActivate ? 'Không khóa' : 'Đã khóa'}
+                            <td style={borderLeftRight}>
+                                <p style={{
+                                    ...cellStatus,
+                                    color: user.isActivate ? cellStatus.color : cellStatus.colorRed,
+                                    border: user.isActivate ? cellStatus.border : cellStatus.borderRed,
+                                    background: user.isActivate ? cellStatus.background : cellStatus.backgroundRed
+                                }}>{user.isActivate ? 'Đang hiện' : 'Đang ẩn'}</p>
                             </td>
-
                             <td style={center}>
-                                <Button onClick={() => handleShowModal(user)}>Chi tiết</Button>
+                                <Button style={{fontSize:12}} onClick={() => handleShowModal(user)}>Chi tiết</Button>
                                 &nbsp;
                                 {user.isActivate ? (
                                     <Button variant="success" onClick={() => handleLockUser(user._id)}><IoLockOpen /></Button>

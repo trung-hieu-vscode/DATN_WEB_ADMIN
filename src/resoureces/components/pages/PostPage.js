@@ -39,7 +39,7 @@ const PostPage = () => {
     };
 
     const toggleActivation = async (postId, activable) => {
-        const action = activable ? 'ẩn' : 'hiện';
+        const action = activable ? 'hiện' : 'ẩn';
         MySwal.fire({
             title: `Bạn có chắc chắn muốn ${action} bài viết này không?`,
             icon: 'warning',
@@ -189,7 +189,8 @@ const PostPage = () => {
     // Styles
     const borderLeftRight = {
         border: "none",
-        borderBottom: "inherit"
+        borderBottom: "1px solid",
+
     }
 
     const tableStyle = {
@@ -238,7 +239,7 @@ const PostPage = () => {
         backgroundColor: '#f8d7da',
     };
 
-   
+
 
     return (
         <div className="container-fluid">
@@ -258,6 +259,12 @@ const PostPage = () => {
                     </Form>
                 </Navbar.Collapse>
             </Navbar>
+            <Button style={{fontSize:12}} variant="primary" onClick={() => {
+                const url = new URL(window.location.origin + `/listpostvip`);
+                window.location.href = url;
+            }}>
+                Danh sách bài viết mua vip
+            </Button>
             <table className="table" style={tableStyle}>
                 <thead>
                     <tr>
@@ -278,7 +285,7 @@ const PostPage = () => {
                             <td style={cellStyle}>{index + 1}</td>
                             <td style={cellFull}>
                                 {post.files && post.files.length > 0 && (
-                                    <ImageWithFallback src={`https://datnapi.vercel.app/${post.files[0]}`} fallbackSrc={logoImg}  alt="post"  />
+                                    <ImageWithFallback src={`https://datnapi.vercel.app/${post.files[0]}`} fallbackSrc={logoImg} alt="post" />
                                 )}
                             </td>
                             <td style={cellStyle}>{post.title}</td>
@@ -291,7 +298,7 @@ const PostPage = () => {
                                     color: post.activable ? cellStatus.color : cellStatus.colorRed,
                                     border: post.activable ? cellStatus.border : cellStatus.borderRed,
                                     background: post.activable ? cellStatus.background : cellStatus.backgroundRed
-                                }}>{post.activable ? 'Đã duyệt' : 'Chưa duyệt'}</p>
+                                }}>{post.activable ? 'Đang hiện' : 'Đang ẩn'}</p>
                             </td>
                             <td style={center}>
                                 <Button variant="info" onClick={() => handleShowModal(post)}>
@@ -318,12 +325,12 @@ const PostPage = () => {
 // Img tag with fallback 
 function ImageWithFallback({ src, fallbackSrc, alt }) {
     const handleError = (e) => {
-      // Set the fallback source if there's an error loading the original src
-      e.target.src = fallbackSrc;
+        // Set the fallback source if there's an error loading the original src
+        e.target.src = fallbackSrc;
     };
-  
+
     return (
-      <img src={src} alt={alt} onError={handleError} style={{ width: '80px', height: '80px', objectFit: "cover", objectPosition:"center", borderRadius: "50px" }}/>
+        <img src={src} alt={alt} onError={handleError} style={{ width: '80px', height: '80px', objectFit: "cover", objectPosition: "center", borderRadius: "50px" }} />
     );
-  }
+}
 export default PostPage;
