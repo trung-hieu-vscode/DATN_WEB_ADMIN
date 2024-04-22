@@ -18,6 +18,7 @@ const User = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [lockedUsers, setLockedUsers] = useState({});
     const [loading, setLoading] = useState(false);
+    const [loadingDetails, setLoadingDetails] = useState({});
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -76,9 +77,13 @@ const User = () => {
     }, [users]);
 
     const handleShowModal = async (user) => {
-        setSelectedUser(user);
-        await fetchUserData(user._id);
-        setShowModal(true);
+        if (!loadingDetails[user._id]) {
+            setLoadingDetails(prev => ({ ...prev, [user._id]: true }));
+            setSelectedUser(user);
+            await fetchUserData(user._id);
+            setShowModal(true);
+            setLoadingDetails(prev => ({ ...prev, [user._id]: false }));
+        }
     };
 
     //SL hiển thị
@@ -91,12 +96,12 @@ const User = () => {
             return (
                 <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {sortedData.map((data, index) => (
-                        <div key={index} style={{border: '2px dashed', borderRadius: 10, borderColor: data.paid ? '#c3e6cb' : '#f5c6cb', margin: '8px 4px', padding: 8}}>
+                        <div key={index} style={{ border: '2px dashed', borderRadius: 10, borderColor: data.paid ? '#c3e6cb' : '#f5c6cb', margin: '8px 4px', padding: 8 }}>
                             {data.type === 'transaction' ? (
                                 <>
                                     <p style={{ color: data.paid ? '#28a745' : '#dc3545' }}>
                                         <strong>{data.paid ? 'Nạp tiền thành công' : 'Nạp tiền thất bại'}</strong>
-                                    </p>                                    
+                                    </p>
                                     <p><strong>Nội dung:</strong> {data.description.content}</p>
                                     <p><strong>Thời gian:</strong> {moment(data.createAt).format('DD/MM/YYYY HH:mm')}</p>
                                 </>
@@ -328,10 +333,10 @@ const User = () => {
                         <th style={cellStyle}>Email</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
-                            <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px', backgroundColor: '#f9862e', fontSize:12 }}>
+                            <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px', backgroundColor: '#f9862e', fontSize: 12 }}>
                                 Khoá tất cả
                             </Button>
-                            <Button style={{fontSize:12}} variant="success" onClick={() => handleLockUnlockAllUsers(false)}>
+                            <Button style={{ fontSize: 12 }} variant="success" onClick={() => handleLockUnlockAllUsers(false)}>
                                 Mở khóa tất cả
                             </Button>
                         </th>
@@ -349,10 +354,18 @@ const User = () => {
                                     color: user.isActivate ? cellStatus.color : cellStatus.colorRed,
                                     border: user.isActivate ? cellStatus.border : cellStatus.borderRed,
                                     background: user.isActivate ? cellStatus.background : cellStatus.backgroundRed
-                                }}>{user.isActivate ? 'Đang hiện' : 'Đang ẩn'}</p>
+                                }}>{user.isActivate ? 'Chưa khoá' : 'Đã khóa'}</p>
                             </td>
                             <td style={center}>
-                                <Button style={{fontSize:12}} onClick={() => handleShowModal(user)}>Chi tiết</Button>
+                                <Button
+                                    style={{ fontSize: 12 }}
+                                    onClick={() => handleShowModal(user)}
+                                    disabled={loadingDetails[user._id]}
+                                >
+                                    {loadingDetails[user._id] ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : "Chi tiết"}
+                                </Button>
                                 &nbsp;
                                 {user.isActivate ? (
                                     <Button variant="success" onClick={() => handleLockUser(user._id)}><IoLockOpen /></Button>
@@ -360,6 +373,7 @@ const User = () => {
                                     <Button variant="danger" onClick={() => handleLockUser(user._id)}><IoLockClosed /></Button>
                                 )}
                             </td>
+
                         </tr>
                     ))}
                 </tbody>

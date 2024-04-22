@@ -18,6 +18,7 @@ const PostPage = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [loadingDetails, setLoadingDetails] = useState({});
 
     useEffect(() => {
         if (postData.length == 0) {
@@ -135,10 +136,18 @@ const PostPage = () => {
         const day = date.toLocaleDateString('en-GB');
         return { time, day };
     };
-
-    const handleShowModal = (post) => {
-        setSelectedPost(post);
-        setShowModal(true);
+//
+    // const handleShowModal = (post) => {
+    //     setSelectedPost(post);
+    //     setShowModal(true);
+    // };
+    const handleShowModal = async (post) => {
+        if (!loadingDetails[post._id]) {
+            setLoadingDetails(prev => ({ ...prev, [post._id]: true }));
+            setSelectedPost(post);
+            setShowModal(true);
+            setLoadingDetails(prev => ({ ...prev, [post._id]: false }));
+        }
     };
 
     const handleCloseModal = () => {
@@ -153,7 +162,7 @@ const PostPage = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <p><strong>Tiêu đề:</strong> {selectedPost.title}</p>
-                    <p><strong>Trạng thái:</strong> {selectedPost.activable ? "Visible" : "Hidden"}</p>
+                    <p><strong>Trạng thái:</strong> {selectedPost.activable ? "đang hiện" : "đang ẩn"}</p>
                     <p><strong>Chi tiết:</strong> {selectedPost.detail}</p>
                     <p><strong>Vị trí:</strong> {selectedPost.location}</p>
                     <p><strong>Giá:</strong> {selectedPost.price} VND</p>
@@ -259,7 +268,7 @@ const PostPage = () => {
                     </Form>
                 </Navbar.Collapse>
             </Navbar>
-            <Button style={{fontSize:12}} variant="primary" onClick={() => {
+            <Button style={{fontSize:16}} variant="primary" onClick={() => {
                 const url = new URL(window.location.origin + `/listpostvip`);
                 window.location.href = url;
             }}>
@@ -285,7 +294,7 @@ const PostPage = () => {
                             <td style={cellStyle}>{index + 1}</td>
                             <td style={cellFull}>
                                 {post.files && post.files.length > 0 && (
-                                    <ImageWithFallback src={`https://datnapi.vercel.app/${post.files[0]}`} fallbackSrc={logoImg} alt="post" />
+                                    <ImageWithFallback src={`${post.files[0]}`} fallbackSrc={logoImg} alt="post" />
                                 )}
                             </td>
                             <td style={cellStyle}>{post.title}</td>
@@ -301,8 +310,14 @@ const PostPage = () => {
                                 }}>{post.activable ? 'Đang hiện' : 'Đang ẩn'}</p>
                             </td>
                             <td style={center}>
-                                <Button variant="info" onClick={() => handleShowModal(post)}>
-                                    Chi tiết bài viết
+                            <Button
+                                    style={{ fontSize: 12 }}
+                                    onClick={() => handleShowModal(post)}
+                                    disabled={loadingDetails[post._id]}
+                                >
+                                    {loadingDetails[post._id] ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : "Chi tiết bài viết"}
                                 </Button>
                                 <Button
                                     variant={post.activable ? 'success' : 'secondary'}
