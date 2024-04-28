@@ -136,7 +136,11 @@ const PostPage = () => {
         const day = date.toLocaleDateString('en-GB');
         return { time, day };
     };
-    
+//
+    // const handleShowModal = (post) => {
+    //     setSelectedPost(post);
+    //     setShowModal(true);
+    // };
     const handleShowModal = async (post) => {
         if (!loadingDetails[post._id]) {
             setLoadingDetails(prev => ({ ...prev, [post._id]: true }));

@@ -44,6 +44,7 @@ const Dashboard = () => {
       } else {
         console.error('Error fetching users');
       }
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
