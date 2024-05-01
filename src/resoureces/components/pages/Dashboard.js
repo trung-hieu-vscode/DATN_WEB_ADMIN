@@ -73,7 +73,7 @@ const Dashboard = () => {
     labels: getDates(),
     datasets: [
       {
-        label: 'Revenue',
+        label: 'VNĐ',
         backgroundColor: 'rgba(0, 123, 255, 0.5)',
         borderColor: 'rgba(0, 123, 255, 1)',
         borderWidth: 1,
@@ -128,7 +128,9 @@ const Dashboard = () => {
     <div className="container-fluid">
       <h1 className="display-4 post-page-title">Bảng điều khiển</h1>
       <div style={{ height: '50px', backgroundColor: 'rgb(248, 249, 250)' }}></div>
-      <div className="row">
+      <div>
+        
+      </div>
         <div className="col-md-6">
           <h2 className="text-center">Thống kê doanh thu</h2>
           <div className="d-flex justify-content-around">
@@ -156,20 +158,7 @@ const Dashboard = () => {
             <Bar data={barChartData} options={barChartOptions} height={400} />
           </div>
         </div>
-        <div className="col-md-6">
-          <h2 className="text-center">Xếp hạng nạp tiền</h2>
-          <div className="user-list-container">
-            <ListGroup>
-              {filteredUsers.map((user, index) => (
-                <ListGroup.Item key={user._id || index}>
-                  <strong>{user.name}</strong> - {formatBalance(user.balance)} vnd
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          </div>
-        </div>
       </div>
-    </div>
   );
 }
 

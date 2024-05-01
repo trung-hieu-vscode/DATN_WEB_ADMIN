@@ -331,6 +331,7 @@ const User = () => {
                         <th style={cellStyle}>STT</th>
                         <th style={cellStyle}>Tên người dùng</th>
                         <th style={cellStyle}>Email</th>
+                        <th style={center}>Hoạt động</th>
                         <th style={center}>Trạng thái</th>
                         <th style={center}>
                             <Button onClick={() => handleLockUnlockAllUsers(true)} style={{ marginRight: '10px', backgroundColor: '#f9862e', fontSize: 12 }}>
@@ -348,6 +349,16 @@ const User = () => {
                             <td style={cellStyle}>{index + 1}</td>
                             <td style={cellStyle}>{user.name}</td>
                             <td style={cellStyle}>{user.email}</td>
+                            <td style={borderLeftRight}>
+                                <p style={{
+                                    ...cellStatus,
+                                    color: (user.socketId === 'off' || !user.socketId) ? cellStatus.colorRed : cellStatus.color,
+                                    border: (user.socketId === 'off' || !user.socketId) ? cellStatus.borderRed : cellStatus.border,
+                                    background: (user.socketId === 'off' || !user.socketId) ? cellStatus.backgroundRed : cellStatus.background
+                                }}>
+                                    {(user.socketId === 'off' || !user.socketId) ? 'Không hoạt động' : 'Đang hoạt động'}
+                                </p>
+                            </td>
                             <td style={borderLeftRight}>
                                 <p style={{
                                     ...cellStatus,
