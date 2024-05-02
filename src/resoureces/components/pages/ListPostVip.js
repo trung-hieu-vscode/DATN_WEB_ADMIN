@@ -9,7 +9,6 @@ function ListPostVip() {
         const fetchPosts = async () => {
             try {
                 const response = await AxiosInstance().get('/api/postnews');
-                // Filter to only include posts where isVip is true
                 const vipPosts = response.data.filter(post => post.isVip);
                 if (vipPosts && Array.isArray(vipPosts)) {
                     setPosts(vipPosts);

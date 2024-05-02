@@ -14,7 +14,6 @@ const EditUserDialog = ({ user, onSave, onClose }) => {
     });
 
     useEffect(() => {
-        // Khi component được mounted, thiết lập thông tin người dùng hiện tại
         if (user) {
             setEditedUser({
                 ...user,
@@ -32,7 +31,7 @@ const EditUserDialog = ({ user, onSave, onClose }) => {
     };
 
     const handleSaveUser = async () => {
-        // Bỏ qua mật khẩu nếu không có gì được nhập vào (để không cập nhật mật khẩu hiện tại)
+
         const updatedUser = {
             ...editedUser,
             password: editedUser.password ? await bcrypt.hash(editedUser.password, 12) : undefined

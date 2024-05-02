@@ -9,7 +9,6 @@ import '../css/Dashboard.css';
 import AxiosInstance from '../../helper/Axiosintances';
 import moment from 'moment';
 
-// Register the required components for Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,8 +23,9 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [revenueData, setRevenueData] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(moment().subtract(6, 'days').toDate());
   const [endDate, setEndDate] = useState(new Date());
+  const [totalPosts, setTotalPosts] = useState(0);
 
   const fetchData = async () => {
     try {
@@ -36,7 +36,12 @@ const Dashboard = () => {
       } else {
         console.error('Error fetching revenue data');
       }
-
+      const responsePosts = await AxiosInstance().get('/api/postnews');
+      if (responsePosts && Array.isArray(responsePosts.data)) {
+        setTotalPosts(responsePosts.data.length);
+      } else {
+        console.error('Error fetching posts');
+      }
       const responseUser = await AxiosInstance().get('/api/users');
       if (responseUser && Array.isArray(responseUser.users)) {
         const sortedUsers = responseUser.users.sort((a, b) => b.balance - a.balance);
@@ -124,41 +129,87 @@ const Dashboard = () => {
     );
   }
 
+  const totalAmount = revenueData.reduce((total, amount) => total + amount, 0);
+  const totalUsers = users.length;
+
+  const boxData1 = {
+    background: 'rgba(0, 123, 255, 1)',
+    alignItems: 'center',
+    height: 90,
+    width: 200,
+    borderRadius: 10,
+    alignContent: 'center',
+    marginRight: '20px',
+  
+  }
+  const boxData = {
+    background: '#28a745',
+    alignItems: 'center',
+    height: 90,
+    width: 200,
+    borderRadius: 10,
+    alignContent: 'center',
+    marginRight: '20px',
+  
+  }
+  const boxData2 = {
+    background: '#f9862e',
+    alignItems: 'center',
+    height: 90,
+    width: 200,
+    borderRadius: 10,
+    alignContent: 'center',
+    marginRight: '20px',
+  
+  }
+
   return (
     <div className="container-fluid">
       <h1 className="display-4 post-page-title">Bảng điều khiển</h1>
       <div style={{ height: '50px', backgroundColor: 'rgb(248, 249, 250)' }}></div>
-      <div>
-        
+      <div className="d-flex justify-content-start" style={{marginTop:10}}>
+        <div className="box-container" style={boxData1}>
+          <p className="text-center" style={{ color: 'white', fontSize: 16, marginTop:'5%' }}><strong>Tổng doanh thu:</strong><br/>{formatBalance(totalAmount)}</p>
+        </div>
+        <div className="box-container" style={boxData2}>
+          <p className="text-center" style={{ color: 'white', fontSize: 16, marginTop:'5%' }}><strong>Tổng số người dùng:</strong><br/>{totalUsers}</p>
+        </div>
+        <div className="box-container" style={boxData}>
+          <p className="text-center" style={{ color: 'white', fontSize: 16, marginTop:'5%' }}><strong>Tổng số bài đăng:</strong><br/>{totalPosts}</p> {/* Add totalPosts here */}
+        </div>
       </div>
-        <div className="col-md-6">
+      <div className="row">
+        <div className="col-md-12">
           <h2 className="text-center">Thống kê doanh thu</h2>
-          <div className="d-flex justify-content-around">
-            <DatePicker
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              className="date-picker"
-              dateFormat="dd-MM-yyyy"
-            />
-            <DatePicker
-              selected={endDate}
-              onChange={date => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              className="date-picker"
-              dateFormat="dd-MM-yyyy"
-            />
-          </div>
+          <div className="text-center" style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+  <DatePicker
+    selected={startDate}
+    onChange={date => setStartDate(date)}
+    selectsStart
+    startDate={startDate}
+    endDate={endDate}
+    className="date-picker"
+    dateFormat="dd-MM-yyyy"
+    style={{ marginRight: '20px' }}
+  />
+  <DatePicker
+    selected={endDate}
+    onChange={date => setEndDate(date)}
+    selectsEnd
+    startDate={startDate}
+    endDate={endDate}
+    minDate={startDate}
+    className="date-picker"
+    dateFormat="dd-MM-yyyy"
+  />
+</div>
+
           <div className="chart-container">
             <Bar data={barChartData} options={barChartOptions} height={400} />
           </div>
         </div>
       </div>
+    </div>
   );
 }
 

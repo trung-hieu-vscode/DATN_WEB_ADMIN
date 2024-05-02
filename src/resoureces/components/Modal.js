@@ -1,5 +1,5 @@
 import React from 'react';
-import './Modal.css'; // Giả sử bạn đã tạo một file CSS cho Modal
+import './Modal.css'; 
 
 const Modal = ({ title, onClose, content }) => {
   return (

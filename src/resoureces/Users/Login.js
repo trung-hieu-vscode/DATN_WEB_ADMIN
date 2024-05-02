@@ -42,7 +42,7 @@ const Login = (props) => {
         text: 'Đã xảy ra lỗi khi đăng nhập!'
       });
     } finally {
-      setLoading(false); // Reset loading state regardless of login success or failure
+      setLoading(false);
     }
   };
 

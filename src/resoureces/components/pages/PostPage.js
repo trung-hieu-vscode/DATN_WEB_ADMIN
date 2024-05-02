@@ -40,6 +40,10 @@ const PostPage = () => {
     };
 
     const toggleActivation = async (postId, activable) => {
+        setLoadingDetails(prevState => ({
+            ...prevState,
+            [postId]: true // Đặt trạng thái loading của postId thành true khi bắt đầu xử lý
+        }));
         const action = activable ? 'hiện' : 'ẩn';
         MySwal.fire({
             title: `Bạn có chắc chắn muốn ${action} bài viết này không?`,
@@ -67,10 +71,23 @@ const PostPage = () => {
                     );
                 }
             }
+        }).finally(() => {
+            setLoading(false);
+            setLoadingDetails(prevState => ({
+                ...prevState,
+                [postId]: false 
+            }));
         });
     };
 
     const hideAllPosts = async () => {
+        const unhiddenPosts = postData.filter(post => post.activable);
+        if (unhiddenPosts.length === 0) {
+            toast.warning('Tất cả các bài viết đã được khoá.');
+            setLoading(false);
+            return;
+        }
+
         MySwal.fire({
             title: 'Bạn muốn ẩn tất cả bài viết?',
             icon: 'warning',
@@ -81,17 +98,16 @@ const PostPage = () => {
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
             if (result.isConfirmed) {
-                setLoading(true);
-                const hidePromises = postData.map(post =>
+                const hidePromises = unhiddenPosts.map(post =>
                     AxiosInstance().post(`/api/postnews/activable/${post._id}`, { activable: false })
                 );
                 try {
                     const results = await Promise.allSettled(hidePromises);
                     const hiddenPosts = results.filter(result => result.status === 'fulfilled');
-                    toast.success(`${hiddenPosts.length} posts have been hidden.`);
+                    toast.success(`${hiddenPosts.length} bài viết đã được ẩn.`);
                 } catch (error) {
                     console.error('Error hiding posts:', error);
-                    toast.error(`An error occurred while hiding the posts: ${error.message}`);
+                    toast.error(`Đã xảy ra lỗi khi ẩn các bài viết: ${error.message}`);
                 } finally {
                     fetchData();
                     setLoading(false);
@@ -101,6 +117,14 @@ const PostPage = () => {
     };
 
     const showAllPosts = async () => {
+        setLoading(true);
+        const hiddenPosts = postData.filter(post => !post.activable);
+        if (hiddenPosts.length === 0) {
+            toast.warning('Tất cả các bài viết đã được hiện.');
+            setLoading(false);
+            return;
+        }
+
         MySwal.fire({
             title: 'Bạn muốn hiện tất cả bài viết?',
             icon: 'warning',
@@ -111,17 +135,16 @@ const PostPage = () => {
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
             if (result.isConfirmed) {
-                setLoading(true);
-                const showPromises = postData.map(post =>
+                const showPromises = hiddenPosts.map(post =>
                     AxiosInstance().post(`/api/postnews/activable/${post._id}`, { activable: true })
                 );
                 try {
                     const results = await Promise.allSettled(showPromises);
                     const shownPosts = results.filter(result => result.status === 'fulfilled');
-                    toast.success(`${shownPosts.length} posts have been shown.`);
+                    toast.success(`${shownPosts.length} bài viết đã được hiện.`);
                 } catch (error) {
                     console.error('Error showing posts:', error);
-                    toast.error(`An error occurred while showing the posts: ${error.message}`);
+                    toast.error(`Đã xảy ra lỗi khi hiện các bài viết: ${error.message}`);
                 } finally {
                     fetchData();
                     setLoading(false);
@@ -136,11 +159,7 @@ const PostPage = () => {
         const day = date.toLocaleDateString('en-GB');
         return { time, day };
     };
-//
-    // const handleShowModal = (post) => {
-    //     setSelectedPost(post);
-    //     setShowModal(true);
-    // };
+
     const handleShowModal = async (post) => {
         if (!loadingDetails[post._id]) {
             setLoadingDetails(prev => ({ ...prev, [post._id]: true }));
@@ -244,11 +263,6 @@ const PostPage = () => {
         fontWeight: "bold",
 
     }
-    const lockedStyle = {
-        backgroundColor: '#f8d7da',
-    };
-
-
 
     return (
         <div className="container-fluid">
@@ -268,7 +282,7 @@ const PostPage = () => {
                     </Form>
                 </Navbar.Collapse>
             </Navbar>
-            <Button style={{fontSize:16}} variant="primary" onClick={() => {
+            <Button style={{ fontSize: 16 }} variant="primary" onClick={() => {
                 const url = new URL(window.location.origin + `/listpostvip`);
                 window.location.href = url;
             }}>
@@ -310,7 +324,7 @@ const PostPage = () => {
                                 }}>{post.activable ? 'Đang hiện' : 'Đang ẩn'}</p>
                             </td>
                             <td style={center}>
-                            <Button
+                                <Button
                                     style={{ fontSize: 12 }}
                                     onClick={() => handleShowModal(post)}
                                     disabled={loadingDetails[post._id]}
@@ -322,8 +336,11 @@ const PostPage = () => {
                                 <Button
                                     variant={post.activable ? 'success' : 'secondary'}
                                     onClick={() => toggleActivation(post._id, !post.activable)}
+                                    disabled={loadingDetails[post._id]}
                                 >
-                                    {post.activable ? <IoLockOpen /> : <IoLockClosed />}
+                                    {loadingDetails[post._id] ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (post.activable ? <IoLockOpen /> : <IoLockClosed />)}
                                 </Button>
                             </td>
                         </tr>

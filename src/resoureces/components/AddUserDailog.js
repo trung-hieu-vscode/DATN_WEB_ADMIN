@@ -19,7 +19,6 @@ const bcrypt = require('bcryptjs');
         const handleAddUser = async () => {
             swal({
                 title: "Xác nhận thêm người dùng mới?",
-                // ... các tùy chọn khác của swal
             }).then(async (willAdd) => {
                 if (willAdd) {
                     try {
@@ -39,7 +38,6 @@ const bcrypt = require('bcryptjs');
                             console.log("Adding user failed:", result);
                             window.location.href = '/user';
                             swal("Đang thêm người dùng", { icon: "lodaing" });
-                            // swal("Không thể thêm người dùng", { icon: "error" });
                         }
                     } catch (error) {
                         console.error("Error when adding user:", error);

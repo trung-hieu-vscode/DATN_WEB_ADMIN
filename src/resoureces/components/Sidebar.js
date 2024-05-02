@@ -12,17 +12,17 @@ const Sidebar = ({ children }) => {
     const menuItem = [
         {
             path: "/",
-            name: "Dashboard",
+            name: "Thống kê",
             icon: <FaTh />
         },
         {
             path: "/user",
-            name: "List Users",
+            name: "QL người dùng",
             icon: <FaUsers />
         },
         {
             path: "/postpage",
-            name: "PostNews",
+            name: "QL bài viết",
             icon: <FaList />
         },
     ];

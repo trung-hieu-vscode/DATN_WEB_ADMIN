@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AxiosInstance from '../helper/Axiosintances';
-import '../components/css/user.css'; // Đảm bảo rằng các styles đã được import đúng
+import '../components/css/user.css';
 import { FaUser, FaLock, FaEnvelope, FaPhone } from "react-icons/fa";
 
 const Register = () => {
@@ -23,7 +23,7 @@ const Register = () => {
       if (result && result.success) {
         console.log('Đăng ký thành công');
         alert('Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.');
-        window.location.href = '/login'; // login 
+        window.location.href = '/login';
       } else {
         alert('Đăng ký thất bại: ' + result.message);
       }
