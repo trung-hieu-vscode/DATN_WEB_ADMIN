@@ -22,9 +22,20 @@ const Sidebar = ({ children }) => {
         },
         {
             path: "/postpage",
-            name: "QL bài viết",
+            name: "QL loai thu cung",
             icon: <FaList />
         },
+        {
+            path: "/order",
+            name: "QL don hang",
+            icon: <FaList />
+        },
+        {
+            path: "/category",
+            name: "QL danh muc",
+            icon: <FaList />
+        },
+
     ];
 
     const handleLogout = () => {

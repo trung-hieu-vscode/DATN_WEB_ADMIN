@@ -11,8 +11,8 @@ import User from './resoureces/components/pages/User';
 import Register from './resoureces/Users/Register';
 import PostPage from './resoureces/components/pages/PostPage';
 import PostUserId from './resoureces/components/pages/PostUserId';
-
-
+import Order from './resoureces/components/pages/Order';
+import Category from './resoureces/components/pages/Category';
 function App() {
 
   //đọc thông tin user từ localStorage
@@ -69,6 +69,8 @@ function App() {
             <Route path='/dashboard' element={<WithSidebar><Dashboard /></WithSidebar>} />
             <Route path='/listpostvip' element={<WithSidebar><ListPostVip /></WithSidebar>} />
             <Route path='/postpage' element={<WithSidebar><PostPage /></WithSidebar>} />
+            <Route path='/order' element={<WithSidebar><Order /></WithSidebar>} />
+            <Route path='/Category' element={<WithSidebar><Category /></WithSidebar>} />
             {/* <Route path='/chart' element={<WithSidebar><Chart/></WithSidebar>} /> */}
             {/* <Route path='/productList' element={<WithSidebar><ProductList /></WithSidebar>} /> */}
             {/* <Route path='/postuserid' element={<WithSidebar><PostUserId /></WithSidebar>} /> */}
